@@ -6,6 +6,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import AuthPage from "./pages/auth/AuthPage";
 import VolunteerPage from "./pages/volunteer/VolunteerPage";
 import NgoPage from "./pages/ngo/NgoPage";
+import ProfilePage from "./pages/volunteer/pages/profile/ProfilePage";
 // import { RootState } from "./store/store";
 
 // // Lazy-loaded components
@@ -19,48 +20,43 @@ import NgoPage from "./pages/ngo/NgoPage";
 // const SettingPage = React.lazy(() => import("./pages/Setting/SettingPage"));
 
 function AppRouter() {
-    const [auth, setAuth] = useState(true);
-    // const authSelector = useSelector((state: RootState) => state.auth);
+  const [auth, setAuth] = useState(true);
+  // const authSelector = useSelector((state: RootState) => state.auth);
 
-    // useEffect(() => {
-    //     const checkAuth = async () => {
-    //         const token = localStorage.getItem("token");
-    //         setAuth(!!token);
-    //     };
-    //     checkAuth();
-    // }, [authSelector.user]);
+  // useEffect(() => {
+  //     const checkAuth = async () => {
+  //         const token = localStorage.getItem("token");
+  //         setAuth(!!token);
+  //     };
+  //     checkAuth();
+  // }, [authSelector.user]);
 
-    // if (authSelector.loading) {
-    //     // Show the loader while checking authentication
-    //     return <h1>Loading....</h1>;
-    // }
+  // if (authSelector.loading) {
+  //     // Show the loader while checking authentication
+  //     return <h1>Loading....</h1>;
+  // }
 
-    return (
-        <BrowserRouter>
-            <Suspense fallback={<h1>Loading...</h1>}>
-                <Routes>
-                    {auth ? (
-                        <Route element={<MainLayout />}>
-                            <Route
-                                path="/volunteer/*"
-                                element={<VolunteerPage />}
-                            />
-                            <Route path="/ngo/*" element={<NgoPage />} />
-                            <Route
-                                path="*"
-                                element={<Navigate to="/volunteer" />}
-                            />
-                        </Route>
-                    ) : (
-                        <Route element={<AuthLayout />}>
-                            <Route path="/auth/*" element={<AuthPage />} />
-                            <Route path="*" element={<Navigate to="/auth" />} />
-                        </Route>
-                    )}
-                </Routes>
-            </Suspense>
-        </BrowserRouter>
-    );
+  return (
+    <BrowserRouter>
+      <Suspense fallback={<h1>Loading...</h1>}>
+        <Routes>
+          {auth ? (
+            <Route element={<MainLayout />}>
+              <Route path="/volunteer/*" element={<ProfilePage />} />
+              {/* <Route path="/volunteer/*" element={<VolunteerPage />} /> */}
+              <Route path="/ngo/*" element={<NgoPage />} />
+              <Route path="*" element={<Navigate to="/volunteer" />} />
+            </Route>
+          ) : (
+            <Route element={<AuthLayout />}>
+              <Route path="/auth/*" element={<AuthPage />} />
+              <Route path="*" element={<Navigate to="/auth" />} />
+            </Route>
+          )}
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+  );
 }
 
 export default AppRouter;
