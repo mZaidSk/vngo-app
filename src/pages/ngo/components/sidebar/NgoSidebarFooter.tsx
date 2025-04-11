@@ -29,7 +29,7 @@ export function NgoSidebarFooter() {
     const user = {
         name: "John Doe",
         email: "john.doe@example.com",
-        avatar: "https://www.pexels.com/photo/aircraft-2059627",
+        avatar: "https://images.pexels.com/photos/2059627/pexels-photo-2059627.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
     };
 
     return (

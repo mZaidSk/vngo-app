@@ -23,7 +23,7 @@ const NgoLayout = () => {
                         <h1 className="text-base font-medium">Documents</h1>
                     </div>
                 </header>
-                <div className="flex flex-1 flex-col gap-4 pt-0 bg-amber-100 ">
+                <div className="flex flex-1 flex-col gap-4 pt-0">
                     <Outlet />
                 </div>
             </SidebarInset>
