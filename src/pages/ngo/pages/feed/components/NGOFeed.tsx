@@ -10,6 +10,7 @@ import {
     MessageCircle,
     Share2,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const activities = [
     {
@@ -51,7 +52,11 @@ const NGOFeed = () => {
         <div className="p-6 space-y-4 max-w-4xl mx-auto">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-semibold">NGO Activities Feed</h1>
-                <Button>+ Create Activity</Button>
+                <Link to={"/ngo/activities/add"}>
+                    <Button className="cursor-pointer">
+                        + Create Activity
+                    </Button>
+                </Link>
             </div>
 
             {/* Filters */}
@@ -79,9 +84,11 @@ const NGOFeed = () => {
                             <div className="flex-1">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <p className="font-semibold">
-                                            {activity.ngoName}
-                                        </p>
+                                        <Link to={"/ngo/profile/:id"}>
+                                            <p className="font-semibold">
+                                                {activity.ngoName}
+                                            </p>
+                                        </Link>
                                         <p className="text-sm text-muted-foreground">
                                             {activity.location}
                                         </p>
@@ -135,7 +142,11 @@ const NGOFeed = () => {
                                             {activity.shares}
                                         </div>
                                     </div>
-                                    <Button>{activity.buttonLabel}</Button>
+                                    <Link to={"/ngo/activities/:id"}>
+                                        <Button className="cursor-pointer">
+                                            {activity.buttonLabel}
+                                        </Button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

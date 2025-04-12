@@ -6,6 +6,8 @@ import AuthLayout from "./layouts/AuthLayout";
 import AuthPage from "./pages/auth/AuthPage";
 import VolunteerPage from "./pages/volunteer/VolunteerPage";
 import NgoPage from "./pages/ngo/NgoPage";
+import HomePage from "./pages/home/HomePage";
+import ScrollToHash from "./pages/home/components/ScrollToHash";
 // import { RootState } from "./store/store";
 
 // // Lazy-loaded components
@@ -39,6 +41,8 @@ function AppRouter() {
         <BrowserRouter>
             <Suspense fallback={<h1>Loading...</h1>}>
                 <Routes>
+                    <Route path="/" element={<HomePage />} />
+
                     {auth ? (
                         <Route element={<MainLayout />}>
                             <Route
@@ -46,10 +50,7 @@ function AppRouter() {
                                 element={<VolunteerPage />}
                             />
                             <Route path="/ngo/*" element={<NgoPage />} />
-                            <Route
-                                path="*"
-                                element={<Navigate to="/volunteer" />}
-                            />
+                            <Route path="*" element={<Navigate to="/" />} />
                         </Route>
                     ) : (
                         <Route element={<AuthLayout />}>

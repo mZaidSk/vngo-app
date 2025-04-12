@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NgoSidebarFooter } from "./NgoSidebarFooter";
 import { NgoSidebarMain } from "./NgoSidebarMain";
+import { Link } from "react-router-dom";
 
 // Updated sidebar data
 const data = {
@@ -66,12 +67,12 @@ export function NgoSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             asChild
                             className="data-[slot=sidebar-menu-button]:!p-1.5 bg-zinc-950 hover:bg-zinc-800 hover:text-white text-white"
                         >
-                            <a href="#">
+                            <Link to="/">
                                 <ArrowUpCircleIcon className="h-5 w-5" />
                                 <span className="text-base font-semibold">
                                     NGO Portal
                                 </span>
-                            </a>
+                            </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>

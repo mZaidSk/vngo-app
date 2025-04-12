@@ -72,7 +72,7 @@ const activities = [
 
 const Activity = () => {
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 max-w-6xl mx-auto">
             {/* Stats Section */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {stats.map((stat, idx) => (
@@ -160,7 +160,7 @@ const Activity = () => {
                                     {activity.time}
                                 </span>
                             </div>
-                            <Link to="edit/3">
+                            <Link to={`${activity.id}`}>
                                 <Button className="w-full cursor-pointer">
                                     View Details
                                 </Button>
