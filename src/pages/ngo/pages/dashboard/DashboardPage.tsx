@@ -1,7 +1,11 @@
-import React from "react";
+import NGODashboard from "./components/NGODashboard";
 
 const DashboardPage = () => {
-    return <div>DashboardPage</div>;
+    return (
+        <div>
+            <NGODashboard />
+        </div>
+    );
 };
 
 export default DashboardPage;

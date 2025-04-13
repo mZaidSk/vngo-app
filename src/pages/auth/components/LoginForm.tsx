@@ -1,4 +1,6 @@
 // components/Login.tsx
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,8 +9,35 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Apple, Facebook, Github } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { loginUser } from "@/store/slice/AuthSlice";
+
+// Validation schema
+const LoginSchema = Yup.object().shape({
+    email: Yup.string().email("Invalid email").required("Required"),
+    password: Yup.string().min(6, "Too short").required("Required"),
+});
 
 const LoginForm = () => {
+    const dispatch = useDispatch<AppDispatch>();
+
+    const formik = useFormik({
+        initialValues: {
+            email: "",
+            password: "",
+            remember: false,
+        },
+        validationSchema: LoginSchema,
+        onSubmit: (values, { setSubmitting }) => {
+            console.log("Form values:", values);
+            dispatch(loginUser(values)).then((res: any) => {
+                console.log(res);
+            });
+            setSubmitting(false);
+        },
+    });
+
     return (
         <Card className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 shadow-lg overflow-hidden">
             {/* Left side - Welcome Section */}
@@ -32,38 +61,67 @@ const LoginForm = () => {
                 <p className="text-sm text-muted-foreground text-center mb-6">
                     Enter your credentials to continue
                 </p>
-                <form className="space-y-4">
+
+                <form className="space-y-4" onSubmit={formik.handleSubmit}>
                     <div>
-                        <Label htmlFor="email" className="pb-2">
-                            Email Address
-                        </Label>
+                        <Label htmlFor="email">Email Address</Label>
                         <Input
                             id="email"
+                            name="email"
                             type="email"
                             placeholder="Enter your email"
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.email}
                         />
+                        {formik.touched.email && formik.errors.email && (
+                            <p className="text-xs text-red-500">
+                                {formik.errors.email}
+                            </p>
+                        )}
                     </div>
+
                     <div>
-                        <Label htmlFor="password" className="pb-2">
-                            Password
-                        </Label>
+                        <Label htmlFor="password">Password</Label>
                         <Input
                             id="password"
+                            name="password"
                             type="password"
                             placeholder="Enter your password"
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.password}
                         />
+                        {formik.touched.password && formik.errors.password && (
+                            <p className="text-xs text-red-500">
+                                {formik.errors.password}
+                            </p>
+                        )}
                     </div>
+
                     <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="remember" />
+                            <Checkbox
+                                id="remember"
+                                name="remember"
+                                checked={formik.values.remember}
+                                onCheckedChange={(checked) =>
+                                    formik.setFieldValue("remember", checked)
+                                }
+                            />
                             <Label htmlFor="remember">Remember me</Label>
                         </div>
                         <a href="#" className="text-blue-600 hover:underline">
                             Forgot password?
                         </a>
                     </div>
-                    <Button className="w-full" type="submit">
-                        Sign In
+
+                    <Button
+                        className="w-full"
+                        type="submit"
+                        disabled={formik.isSubmitting}
+                    >
+                        {formik.isSubmitting ? "Signing In..." : "Sign In"}
                     </Button>
                 </form>
 
@@ -71,7 +129,6 @@ const LoginForm = () => {
 
                 <div className="text-center space-y-2">
                     <p className="text-sm">Or continue with</p>
-
                     <div className="flex justify-center gap-4">
                         <Button variant="outline" size="icon">
                             <Github className="h-5 w-5" />

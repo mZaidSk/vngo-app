@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 
 function MainLayout() {
     return (
-        <div>
+        <div className="bg-red-500">
             <Outlet />
         </div>
     );

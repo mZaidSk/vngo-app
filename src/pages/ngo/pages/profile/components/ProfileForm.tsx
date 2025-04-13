@@ -4,16 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Upload } from "lucide-react"; // optional for icons
+import { cn } from "@/lib/utils"; // if you use classnames utility
 
-const steps = ["NGO Info", "Area of Operation", "Address"];
+const steps = [
+    "Basic Information",
+    "Contact Information",
+    "Social Media Links",
+    "Branding & Media",
+];
 
 const ProfileForm = () => {
     const [step, setStep] = useState(0);
@@ -24,19 +23,19 @@ const ProfileForm = () => {
     const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
 
     return (
-        <div className="max-w-6xl mx-auto py-10 px-4 md:px-5">
-            <div className="flex flex-col md:flex-row gap-8">
-                {/* Stepper */}
-                <div className="w-full md:w-1/5">
-                    <div className="space-y-6">
+        <div className="max-w-6xl mx-auto ">
+            <div className="w-[70vw] py-10 px-4 md:px-6">
+                <div className="flex flex-col md:flex-row gap-10">
+                    {/* Stepper */}
+                    <div className="md:w-1/4 w-full space-y-6">
                         {steps.map((label, index) => (
                             <div
                                 key={index}
                                 onClick={() => setStep(index)}
-                                className={`flex items-start gap-3 cursor-pointer ${
+                                className={`flex items-center gap-3 cursor-pointer transition ${
                                     step === index
                                         ? "font-semibold text-black"
-                                        : "text-gray-500"
+                                        : "text-muted-foreground hover:text-black"
                                 }`}
                             >
                                 <div
@@ -48,172 +47,134 @@ const ProfileForm = () => {
                                 >
                                     {index + 1}
                                 </div>
-                                <div className="pt-1">{label}</div>
+                                <span className="text-sm">{label}</span>
                             </div>
                         ))}
                     </div>
-                </div>
 
-                {/* Form Card */}
-                <div className="flex-1">
-                    <Card className="shadow-md border-gray-200">
-                        <CardContent className="space-y-4 p-6">
-                            {step === 0 && (
-                                <>
-                                    <div>
-                                        <Label className="pb-2">NGO Name</Label>
-                                        <Input placeholder="Enter NGO name" />
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Form */}
+                    <div className="flex-1">
+                        <Card className="rounded-2xl border border-gray-200 shadow-sm">
+                            <CardContent className="space-y-6 p-8">
+                                {step === 0 && (
+                                    <>
                                         <div>
-                                            <Label className="pb-2">
-                                                Registration Number
-                                            </Label>
-                                            <Input placeholder="Enter registration number" />
+                                            <Label>NGO Name</Label>
+                                            <Input placeholder="Enter NGO name" />
                                         </div>
                                         <div>
-                                            <Label className="pb-2">
-                                                Established Year
-                                            </Label>
+                                            <Label>Mission Statement</Label>
+                                            <Textarea placeholder="Enter your organization’s mission" />
+                                        </div>
+                                        <div>
+                                            <Label>Focus Areas / Causes</Label>
+                                            <Input placeholder="E.g. Education, Health, Environment" />
+                                        </div>
+                                        <div>
+                                            <Label>Founded Year</Label>
                                             <Input
                                                 type="number"
                                                 placeholder="YYYY"
                                             />
                                         </div>
-                                    </div>
-                                    <div>
-                                        <Label className="pb-2">
-                                            Type of NGO
-                                        </Label>
-                                        <Select>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select NGO type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="charity">
-                                                    Charity
-                                                </SelectItem>
-                                                <SelectItem value="nonprofit">
-                                                    Non-Profit
-                                                </SelectItem>
-                                                <SelectItem value="trust">
-                                                    Trust
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div>
-                                        <Label className="pb-2">Website</Label>
-                                        <Input
-                                            type="url"
-                                            placeholder="https://"
-                                        />
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <Label className="pb-2">
-                                                Contact Person Name
-                                            </Label>
-                                            <Input placeholder="Enter contact person name" />
-                                        </div>
-                                        <div>
-                                            <Label className="pb-2">
-                                                Contact Person Phone
-                                            </Label>
-                                            <Input placeholder="Enter phone number" />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label className="pb-2">
-                                            NGO Mission Statement
-                                        </Label>
-                                        <Textarea placeholder="Enter your organization’s mission statement" />
-                                    </div>
-                                </>
-                            )}
+                                    </>
+                                )}
 
-                            {step === 1 && (
-                                <>
-                                    <Label className="pb-2">
-                                        Areas of Operation / Causes Supported
-                                    </Label>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        {[
-                                            "Education",
-                                            "Healthcare",
-                                            "Environment",
-                                            "Poverty Alleviation",
-                                            "Women Empowerment",
-                                            "Child Welfare",
-                                        ].map((cause) => (
-                                            <div
-                                                key={cause}
-                                                className="flex items-center space-x-2"
-                                            >
-                                                <Checkbox id={cause} />
-                                                <Label
-                                                    htmlFor={cause}
-                                                    className="pb-2"
-                                                >
-                                                    {cause}
-                                                </Label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </>
-                            )}
-
-                            {step === 2 && (
-                                <>
-                                    <div>
-                                        <Label className="pb-2">
-                                            Address Line 1
-                                        </Label>
-                                        <Input placeholder="Street, Building, etc." />
-                                    </div>
-                                    <div>
-                                        <Label className="pb-2">
-                                            Address Line 2
-                                        </Label>
-                                        <Input placeholder="Area, Landmark, etc." />
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {step === 1 && (
+                                    <>
                                         <div>
-                                            <Label className="pb-2">City</Label>
-                                            <Input placeholder="Enter city" />
+                                            <Label>Email</Label>
+                                            <Input
+                                                type="email"
+                                                placeholder="example@ngo.org"
+                                            />
                                         </div>
                                         <div>
-                                            <Label className="pb-2">
-                                                State
+                                            <Label>Phone</Label>
+                                            <Input placeholder="+91-9876543210" />
+                                        </div>
+                                        <div>
+                                            <Label>Website</Label>
+                                            <Input placeholder="https://ngo.org" />
+                                        </div>
+                                    </>
+                                )}
+
+                                {step === 2 && (
+                                    <>
+                                        <div>
+                                            <Label>Twitter</Label>
+                                            <Input placeholder="https://twitter.com/yourngo" />
+                                        </div>
+                                        <div>
+                                            <Label>Instagram</Label>
+                                            <Input placeholder="https://instagram.com/yourngo" />
+                                        </div>
+                                        <div>
+                                            <Label>LinkedIn</Label>
+                                            <Input placeholder="https://linkedin.com/company/yourngo" />
+                                        </div>
+                                        <div>
+                                            <Label>YouTube (optional)</Label>
+                                            <Input placeholder="https://youtube.com/@yourngo" />
+                                        </div>
+                                    </>
+                                )}
+
+                                {step === 3 && (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <Label>Logo Upload</Label>
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label>Cover Banner Upload</Label>
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                            />
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <Label>
+                                                Image Gallery (optional)
                                             </Label>
-                                            <Input placeholder="Enter state" />
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                                multiple
+                                            />
                                         </div>
                                     </div>
-                                    <div>
-                                        <Label className="pb-2">
-                                            Postal Code
-                                        </Label>
-                                        <Input placeholder="Enter postal code" />
-                                    </div>
-                                </>
-                            )}
-                        </CardContent>
-                    </Card>
+                                )}
+                            </CardContent>
+                        </Card>
 
-                    {/* Navigation Buttons */}
-                    <div className="flex justify-between mt-6">
-                        <Button
-                            variant="outline"
-                            onClick={prevStep}
-                            disabled={step === 0}
-                        >
-                            Back
-                        </Button>
-                        {step === totalSteps - 1 ? (
-                            <Button type="submit">Submit</Button>
-                        ) : (
-                            <Button onClick={nextStep}>Next Step</Button>
-                        )}
+                        {/* Navigation Buttons */}
+                        <div className="flex justify-between mt-6">
+                            <Button
+                                variant="outline"
+                                onClick={prevStep}
+                                disabled={step === 0}
+                                className="rounded-full"
+                            >
+                                Back
+                            </Button>
+                            {step === totalSteps - 1 ? (
+                                <Button type="submit" className="rounded-full">
+                                    Submit
+                                </Button>
+                            ) : (
+                                <Button
+                                    onClick={nextStep}
+                                    className="rounded-full"
+                                >
+                                    Next Step
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
