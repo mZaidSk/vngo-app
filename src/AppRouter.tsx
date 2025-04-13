@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 // Layouts
 const AuthLayout = React.lazy(() => import("./layouts/AuthLayout"));
@@ -66,11 +67,32 @@ function RouterWithAuthCheck() {
                                 />
                             }
                         />
+
                         <Route
                             path="/volunteer/*"
-                            element={<VolunteerPage />}
+                            element={
+                                <ProtectedRoute
+                                    isAuthenticated={auth}
+                                    allowedRoles={["VOLUNTEER"]}
+                                    userRole={user?.role}
+                                >
+                                    <VolunteerPage />
+                                </ProtectedRoute>
+                            }
                         />
-                        <Route path="/ngo/*" element={<NgoPage />} />
+                        <Route
+                            path="/ngo/*"
+                            element={
+                                <ProtectedRoute
+                                    isAuthenticated={auth}
+                                    allowedRoles={["NGO"]}
+                                    userRole={user?.role}
+                                >
+                                    <NgoPage />
+                                </ProtectedRoute>
+                            }
+                        />
+
                         <Route path="*" element={<Navigate to="/" />} />
                     </>
                 ) : (
