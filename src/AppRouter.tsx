@@ -1,65 +1,93 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import React, { useEffect, useState, Suspense } from "react";
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+    Navigate,
+    useLocation,
+} from "react-router-dom";
 import { useSelector } from "react-redux";
-import MainLayout from "./layouts/MainLayout";
-import AuthLayout from "./layouts/AuthLayout";
-import AuthPage from "./pages/auth/AuthPage";
-import VolunteerPage from "./pages/volunteer/VolunteerPage";
-import NgoPage from "./pages/ngo/NgoPage";
-import HomePage from "./pages/home/HomePage";
-import ScrollToHash from "./pages/home/components/ScrollToHash";
-// import { RootState } from "./store/store";
+import { RootState } from "./store/store";
 
-// // Lazy-loaded components
-// const AuthLayout = React.lazy(() => import("./layouts/AuthLayout"));
-// const AuthPage = React.lazy(() => import("./pages/Auth/AuthPage"));
-// const MainLayout = React.lazy(() => import("./layouts/MainLayout"));
-// const HomePage = React.lazy(() => import("./pages/Home/HomePage"));
-// const ChatPage = React.lazy(() => import("./pages/Chat/ChatPage"));
-// const ProfilePage = React.lazy(() => import("./pages/Profile/ProfilePage"));
-// const PostPage = React.lazy(() => import("./pages/Post/PostPage"));
-// const SettingPage = React.lazy(() => import("./pages/Setting/SettingPage"));
+// Layouts
+const AuthLayout = React.lazy(() => import("./layouts/AuthLayout"));
+const MainLayout = React.lazy(() => import("./layouts/MainLayout"));
 
-function AppRouter() {
-    const [auth, setAuth] = useState(true);
-    // const authSelector = useSelector((state: RootState) => state.auth);
+// Pages
+const AuthPage = React.lazy(() => import("./pages/auth/AuthPage"));
+const HomePage = React.lazy(() => import("./pages/home/HomePage"));
+const VolunteerPage = React.lazy(
+    () => import("./pages/volunteer/VolunteerPage")
+);
+const NgoPage = React.lazy(() => import("./pages/ngo/NgoPage"));
 
-    // useEffect(() => {
-    //     const checkAuth = async () => {
-    //         const token = localStorage.getItem("token");
-    //         setAuth(!!token);
-    //     };
-    //     checkAuth();
-    // }, [authSelector.user]);
+// Define the User interface
+interface User {
+    role: string;
+    // You can add other fields here depending on your user object structure
+}
 
-    // if (authSelector.loading) {
-    //     // Show the loader while checking authentication
-    //     return <h1>Loading....</h1>;
-    // }
+function RouterWithAuthCheck() {
+    const location = useLocation();
+    const authSelector = useSelector((state: RootState) => state.auth);
+
+    const [auth, setAuth] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const checkAuth = () => {
+            const token = localStorage.getItem("token");
+            setUser(JSON.parse(localStorage.getItem("user") || "null"));
+            setAuth(!!token);
+        };
+
+        checkAuth();
+    }, [location.pathname, authSelector.user]);
+
+    if (authSelector.loading) {
+        return <h1>Loading...</h1>;
+    }
 
     return (
-        <BrowserRouter>
-            <Suspense fallback={<h1>Loading...</h1>}>
-                <Routes>
-                    <Route path="/" element={<HomePage />} />
+        <Suspense fallback={<h1>Loading...</h1>}>
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                {auth ? (
+                    <>
+                        <Route
+                            path="/auth/*"
+                            element={
+                                <Navigate
+                                    to={
+                                        user?.role === "NGO"
+                                            ? "/ngo"
+                                            : "/volunteer"
+                                    }
+                                />
+                            }
+                        />
+                        <Route
+                            path="/volunteer/*"
+                            element={<VolunteerPage />}
+                        />
+                        <Route path="/ngo/*" element={<NgoPage />} />
+                        <Route path="*" element={<Navigate to="/" />} />
+                    </>
+                ) : (
+                    <Route element={<AuthLayout />}>
+                        <Route path="/auth/*" element={<AuthPage />} />
+                        <Route path="*" element={<Navigate to="/auth" />} />
+                    </Route>
+                )}
+            </Routes>
+        </Suspense>
+    );
+}
 
-                    {auth ? (
-                        <Route element={<MainLayout />}>
-                            <Route
-                                path="/volunteer/*"
-                                element={<VolunteerPage />}
-                            />
-                            <Route path="/ngo/*" element={<NgoPage />} />
-                            <Route path="*" element={<Navigate to="/" />} />
-                        </Route>
-                    ) : (
-                        <Route element={<AuthLayout />}>
-                            <Route path="/auth/*" element={<AuthPage />} />
-                            <Route path="*" element={<Navigate to="/auth" />} />
-                        </Route>
-                    )}
-                </Routes>
-            </Suspense>
+function AppRouter() {
+    return (
+        <BrowserRouter>
+            <RouterWithAuthCheck />
         </BrowserRouter>
     );
 }

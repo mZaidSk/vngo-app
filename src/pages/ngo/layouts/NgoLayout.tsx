@@ -18,8 +18,18 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { logout } from "@/store/slice/AuthSlice";
 
 const NgoLayout = () => {
+    const dispatch = useDispatch<AppDispatch>();
+
+    const logOut = () => {
+        dispatch(logout());
+        window.location.reload();
+    };
+
     return (
         <SidebarProvider>
             <NgoSidebar />
@@ -87,7 +97,9 @@ const NgoLayout = () => {
                                     <DropdownMenuItem>
                                         Settings
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>Logout</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={logOut}>
+                                        Logout
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
