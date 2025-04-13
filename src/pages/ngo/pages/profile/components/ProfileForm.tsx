@@ -1,29 +1,194 @@
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
+import { useParams, useLocation, useNavigate } from "react-router-dom"; // <-- for route detection
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload } from "lucide-react"; // optional for icons
-import { cn } from "@/lib/utils"; // if you use classnames utility
+import { Button } from "@/components/ui/button";
+import BasicInformation from "./form-components/BasicInformation";
+import ContactInformation from "./form-components/ContactInformation";
+import AddressStep from "./form-components/AddressStep";
+import SocialMediaLinks from "./form-components/SocialMediaLinks";
+import BrandingMedia from "./form-components/BrandingMedia";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import {
+    createNgoProfile,
+    getNgoProfileById,
+    updateNgoProfile,
+} from "@/store/slice/NgoProfileSlice";
+import { toast } from "sonner";
 
 const steps = [
     "Basic Information",
     "Contact Information",
+    "Address",
     "Social Media Links",
     "Branding & Media",
 ];
 
-const ProfileForm = () => {
-    const [step, setStep] = useState(0);
-    const totalSteps = steps.length;
+const stepComponents = [
+    BasicInformation,
+    ContactInformation,
+    AddressStep,
+    SocialMediaLinks,
+    BrandingMedia,
+];
 
-    const nextStep = () =>
-        setStep((prev) => Math.min(prev + 1, totalSteps - 1));
-    const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
+const defaultInitialValues = {
+    ngoName: "",
+    mission: "",
+    focusAreas: "",
+    foundedYear: "",
+    email: "",
+    phone: "",
+    website: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "",
+    twitter: "",
+    instagram: "",
+    linkedin: "",
+    youtube: "",
+    logoUrl: "",
+    bannerUrl: "",
+    galleryUrls: [],
+};
+
+// const defaultInitialValues = {
+//     ngoName: "Hope for All",
+//     mission:
+//         "Empowering underprivileged communities through education and healthcare.",
+//     focusAreas: "Education, Healthcare, Environment",
+//     foundedYear: "2012",
+//     email: "contact@hopeforall.org",
+//     phone: "+919876543210",
+//     website: "https://hopeforall.org",
+//     addressLine1: "123 NGO Street",
+//     addressLine2: "Suite 5B",
+//     city: "New Delhi",
+//     state: "Delhi",
+//     postalCode: "110001",
+//     country: "India",
+//     twitter: "https://twitter.com/hopeforall",
+//     instagram: "https://instagram.com/hopeforall",
+//     linkedin: "https://linkedin.com/company/hopeforall",
+//     youtube: "https://youtube.com/@hopeforall",
+//     logoUrl:
+//         "https://images.pexels.com/photos/3541916/pexels-photo-3541916.jpeg?auto=compress&cs=tinysrgb&w=600",
+//     bannerUrl:
+//         "https://images.pexels.com/photos/10629415/pexels-photo-10629415.jpeg?auto=compress&cs=tinysrgb&w=600",
+//     galleryUrls: [
+//         "https://images.pexels.com/photos/6257043/pexels-photo-6257043.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+//         "https://images.pexels.com/photos/10031832/pexels-photo-10031832.jpeg?auto=compress&cs=tinysrgb&w=600",
+//         "https://images.pexels.com/photos/10629468/pexels-photo-10629468.jpeg?auto=compress&cs=tinysrgb&w=600",
+//         "https://images.pexels.com/photos/10629415/pexels-photo-10629415.jpeg?auto=compress&cs=tinysrgb&w=600",
+//     ],
+// };
+
+const ProfileForm = () => {
+    const location = useLocation();
+    const { isEditMode, profileId } = location.state || {};
+
+    const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
+
+    const ngoProfileSelector = useSelector(
+        (state: RootState) => state.ngoProfile.profile
+    );
+    console.log(ngoProfileSelector);
+
+    const [step, setStep] = useState(0);
+    const [formValues, setFormValues] = useState(defaultInitialValues);
+    const totalSteps = steps.length;
+    const CurrentStep = stepComponents[step];
+
+    const nextStep = () => setStep((s) => Math.min(s + 1, totalSteps - 1));
+    const prevStep = () => setStep((s) => Math.max(s - 1, 0));
+
+    const getUserProfile = () => {
+        if (isEditMode) dispatch(getNgoProfileById(profileId));
+    };
+
+    useEffect(() => {
+        if (profileId) {
+            getUserProfile();
+        }
+    }, [isEditMode, profileId]);
+
+    useEffect(() => {
+        if (ngoProfileSelector?.data) {
+            const mappedValues = {
+                ngoName: ngoProfileSelector.data.organization_name || "",
+                mission: ngoProfileSelector.data.mission || "",
+                focusAreas: ngoProfileSelector.data.focus_areas || "",
+                foundedYear:
+                    ngoProfileSelector.data.founded_year?.toString() || "",
+                email: ngoProfileSelector.data.email || "",
+                phone: ngoProfileSelector.data.phone || "",
+                website: ngoProfileSelector.data.website || "",
+                addressLine1: ngoProfileSelector.data.address_line_1 || "",
+                addressLine2: ngoProfileSelector.data.address_line_2 || "",
+                city: ngoProfileSelector.data.city || "",
+                state: ngoProfileSelector.data.state || "",
+                postalCode: ngoProfileSelector.data.postal_code || "",
+                country: ngoProfileSelector.data.country || "",
+                twitter: ngoProfileSelector.data.twitter || "",
+                instagram: ngoProfileSelector.data.instagram || "",
+                linkedin: ngoProfileSelector.data.linkedin || "",
+                youtube: ngoProfileSelector.data.youtube || "",
+                logoUrl: ngoProfileSelector.data.logo_url || "",
+                bannerUrl: ngoProfileSelector.data.banner_url || "",
+                galleryUrls: ngoProfileSelector.data.gallery_urls || [],
+            };
+
+            setFormValues(mappedValues);
+        }
+    }, [ngoProfileSelector]);
+
+    const handleSubmit = (values: typeof defaultInitialValues) => {
+        const payload = {
+            organization_name: values.ngoName,
+            mission: values.mission,
+            focus_areas: values.focusAreas,
+            founded_year: values.foundedYear,
+            email: values.email,
+            phone: values.phone,
+            website: values.website,
+            address_line_1: values.addressLine1,
+            address_line_2: values.addressLine2,
+            city: values.city,
+            state: values.state,
+            postal_code: values.postalCode,
+            country: values.country,
+            twitter: values.twitter,
+            instagram: values.instagram,
+            linkedin: values.linkedin,
+            youtube: values.youtube,
+            logo_url: values.logoUrl,
+            banner_url: values.bannerUrl,
+            gallery_urls: values.galleryUrls,
+        };
+
+        if (isEditMode) {
+            dispatch(updateNgoProfile({ id: profileId, payload })).then(
+                (res: any) => {
+                    toast(res?.payload?.message);
+                    navigate("/ngo/profile");
+                }
+            );
+        } else {
+            dispatch(createNgoProfile(payload)).then((res: any) => {
+                toast(res?.payload?.message);
+                navigate("/ngo/profile");
+            });
+        }
+    };
 
     return (
-        <div className="max-w-6xl mx-auto ">
+        <div className="max-w-6xl mx-auto">
             <div className="w-[70vw] py-10 px-4 md:px-6">
                 <div className="flex flex-col md:flex-row gap-10">
                     {/* Stepper */}
@@ -54,127 +219,50 @@ const ProfileForm = () => {
 
                     {/* Form */}
                     <div className="flex-1">
-                        <Card className="rounded-2xl border border-gray-200 shadow-sm">
-                            <CardContent className="space-y-6 p-8">
-                                {step === 0 && (
-                                    <>
-                                        <div>
-                                            <Label>NGO Name</Label>
-                                            <Input placeholder="Enter NGO name" />
-                                        </div>
-                                        <div>
-                                            <Label>Mission Statement</Label>
-                                            <Textarea placeholder="Enter your organization’s mission" />
-                                        </div>
-                                        <div>
-                                            <Label>Focus Areas / Causes</Label>
-                                            <Input placeholder="E.g. Education, Health, Environment" />
-                                        </div>
-                                        <div>
-                                            <Label>Founded Year</Label>
-                                            <Input
-                                                type="number"
-                                                placeholder="YYYY"
-                                            />
-                                        </div>
-                                    </>
-                                )}
+                        <Formik
+                            enableReinitialize
+                            initialValues={formValues}
+                            onSubmit={handleSubmit}
+                        >
+                            <Form>
+                                <Card className="rounded-2xl border border-gray-200 shadow-sm">
+                                    <CardContent className="space-y-6 p-8">
+                                        <CurrentStep />
+                                    </CardContent>
+                                </Card>
 
-                                {step === 1 && (
-                                    <>
-                                        <div>
-                                            <Label>Email</Label>
-                                            <Input
-                                                type="email"
-                                                placeholder="example@ngo.org"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label>Phone</Label>
-                                            <Input placeholder="+91-9876543210" />
-                                        </div>
-                                        <div>
-                                            <Label>Website</Label>
-                                            <Input placeholder="https://ngo.org" />
-                                        </div>
-                                    </>
-                                )}
-
-                                {step === 2 && (
-                                    <>
-                                        <div>
-                                            <Label>Twitter</Label>
-                                            <Input placeholder="https://twitter.com/yourngo" />
-                                        </div>
-                                        <div>
-                                            <Label>Instagram</Label>
-                                            <Input placeholder="https://instagram.com/yourngo" />
-                                        </div>
-                                        <div>
-                                            <Label>LinkedIn</Label>
-                                            <Input placeholder="https://linkedin.com/company/yourngo" />
-                                        </div>
-                                        <div>
-                                            <Label>YouTube (optional)</Label>
-                                            <Input placeholder="https://youtube.com/@yourngo" />
-                                        </div>
-                                    </>
-                                )}
-
-                                {step === 3 && (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <Label>Logo Upload</Label>
-                                            <Input
-                                                type="file"
-                                                accept="image/*"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label>Cover Banner Upload</Label>
-                                            <Input
-                                                type="file"
-                                                accept="image/*"
-                                            />
-                                        </div>
-                                        <div className="md:col-span-2">
-                                            <Label>
-                                                Image Gallery (optional)
-                                            </Label>
-                                            <Input
-                                                type="file"
-                                                accept="image/*"
-                                                multiple
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        {/* Navigation Buttons */}
-                        <div className="flex justify-between mt-6">
-                            <Button
-                                variant="outline"
-                                onClick={prevStep}
-                                disabled={step === 0}
-                                className="rounded-full"
-                            >
-                                Back
-                            </Button>
-                            {step === totalSteps - 1 ? (
-                                <Button type="submit" className="rounded-full">
-                                    Submit
-                                </Button>
-                            ) : (
-                                <Button
-                                    onClick={nextStep}
-                                    className="rounded-full"
-                                >
-                                    Next Step
-                                </Button>
-                            )}
-                        </div>
+                                {/* Navigation */}
+                                <div className="flex justify-between mt-6">
+                                    <Button
+                                        variant="outline"
+                                        onClick={prevStep}
+                                        disabled={step === 0}
+                                        type="button"
+                                        className="rounded-full"
+                                    >
+                                        Back
+                                    </Button>
+                                    {step === totalSteps - 1 ? (
+                                        <Button
+                                            type="submit"
+                                            className="rounded-full"
+                                        >
+                                            {isEditMode
+                                                ? "Update Profile"
+                                                : "Submit"}
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            type="button"
+                                            onClick={nextStep}
+                                            className="rounded-full"
+                                        >
+                                            Next Step
+                                        </Button>
+                                    )}
+                                </div>
+                            </Form>
+                        </Formik>
                     </div>
                 </div>
             </div>

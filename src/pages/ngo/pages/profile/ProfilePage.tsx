@@ -8,8 +8,8 @@ const ProfilePage = () => {
             <Route path="/" element={<NGOProfile />} />
             <Route path="/:id" element={<NGOProfile />} />{" "}
             {/*for other ngo profile */}
-            <Route path="/edit/:id" element={<ProfileForm />} />
-            <Route path="/edit" element={<Navigate to="/ngo/profile" />} />
+            <Route path="/edit" element={<ProfileForm />} />
+            <Route path="/create" element={<ProfileForm />} />
         </Routes>
     );
 };

@@ -19,6 +19,8 @@ import {
 } from "recharts";
 
 export default function NGODashboard() {
+    const user = JSON.parse(localStorage.getItem("user") || "");
+
     const stats = [
         {
             title: "Total Donations",
@@ -92,14 +94,23 @@ export default function NGODashboard() {
                 <CardHeader className="flex flex-row justify-between items-center">
                     <div>
                         <CardTitle className="text-xl">
-                            Welcome back, Admin
+                            Welcome back, {user?.name}
                         </CardTitle>
                         <CardDescription>
                             Here's what's happening with your NGO today.
                         </CardDescription>
                     </div>
                     <Avatar>
-                        <AvatarFallback>AD</AvatarFallback>
+                        <AvatarFallback>
+                            {user?.name
+                                ? user.name
+                                      .split(" ")
+                                      .map((word: any) => word[0])
+                                      .join("")
+                                      .toUpperCase()
+                                      .slice(0, 2)
+                                : "NA"}
+                        </AvatarFallback>
                     </Avatar>
                 </CardHeader>
             </Card>
