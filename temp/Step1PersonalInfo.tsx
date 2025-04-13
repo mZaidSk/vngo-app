@@ -1,6 +1,6 @@
-import React from "react";
 import { Field, FormikProps } from "formik";
 import { FormValues } from "./FormValues";
+import React from "react";
 
 interface Props {
   formik: FormikProps<FormValues>;
@@ -11,6 +11,7 @@ interface Props {
 const Step1: React.FC<Props> = ({ onNext }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* First Name */}
       <div>
         <label className="block mb-2 font-semibold text-gray-700">
           First Name
@@ -19,7 +20,6 @@ const Step1: React.FC<Props> = ({ onNext }) => {
           name="firstName"
           placeholder="Enter first name"
           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-          required
         />
       </div>
 
@@ -32,7 +32,6 @@ const Step1: React.FC<Props> = ({ onNext }) => {
           name="lastName"
           placeholder="Enter last name"
           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-          required
         />
       </div>
 
@@ -46,7 +45,6 @@ const Step1: React.FC<Props> = ({ onNext }) => {
           name="dob"
           type="date"
           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-          required
         />
       </div>
 
@@ -57,7 +55,6 @@ const Step1: React.FC<Props> = ({ onNext }) => {
           as="select"
           name="gender"
           className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-gray-400"
-          required
         >
           <option value="">Select gender</option>
           <option value="male">Male</option>
@@ -75,7 +72,6 @@ const Step1: React.FC<Props> = ({ onNext }) => {
           name="phone"
           placeholder="Enter phone number"
           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-          required
         />
       </div>
 
@@ -87,7 +83,6 @@ const Step1: React.FC<Props> = ({ onNext }) => {
           type="email"
           placeholder="Enter email"
           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-          required
         />
       </div>
     </div>

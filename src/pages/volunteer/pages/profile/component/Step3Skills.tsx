@@ -1,5 +1,14 @@
 import React, { useState } from "react";
 import { Field, FormikProps } from "formik";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Command, CommandItem } from "@/components/ui/command";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Step3Props {
   formik: FormikProps<any>;
@@ -7,8 +16,20 @@ interface Step3Props {
   onBack: () => void;
 }
 
+const interestOptions = [
+  "Environment",
+  "Education",
+  "Health",
+  "Animal Welfare",
+  "Disability Support",
+  "Senior Support",
+];
+
 const Step3: React.FC<Step3Props> = ({ formik, onNext, onBack }) => {
   const [customSkill, setCustomSkill] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const selectedInterests = formik.values.interests || [];
 
   const addCustomSkill = () => {
     if (customSkill.trim() && !formik.values.skills.includes(customSkill)) {
@@ -17,11 +38,18 @@ const Step3: React.FC<Step3Props> = ({ formik, onNext, onBack }) => {
     }
   };
 
+  const toggleInterest = (interest: string) => {
+    const updated = selectedInterests.includes(interest)
+      ? selectedInterests.filter((item: string) => item !== interest)
+      : [...selectedInterests, interest];
+
+    formik.setFieldValue("interests", updated);
+  };
   return (
     <div>
-      {/* <div className="bg-amber-400 shadow-lg p-8 rounded-xl w-full max-w-2xl mx-auto"> */}
-      <h2 className="text-2xl font-bold mb-6 text-black ">Skills</h2>
+      <h2 className="text-2xl font-bold mb-6 text-black">Skills</h2>
 
+      {/* Technical Skills */}
       <div className="mb-6">
         <label className="block text-lg font-semibold text-black mb-2">
           Technical Skills
@@ -33,7 +61,8 @@ const Step3: React.FC<Step3Props> = ({ formik, onNext, onBack }) => {
               <span className="text-sm text-black">{skill}</span>
             </label>
           ))}
-          {/* Display custom skills */}
+
+          {/* Custom Skills */}
           {formik.values.skills
             ?.filter(
               (s: string) =>
@@ -49,7 +78,7 @@ const Step3: React.FC<Step3Props> = ({ formik, onNext, onBack }) => {
             ))}
         </div>
 
-        {/* Add custom skill */}
+        {/* Add custom skill input */}
         <div className="mt-4 flex gap-2">
           <input
             type="text"
@@ -68,40 +97,49 @@ const Step3: React.FC<Step3Props> = ({ formik, onNext, onBack }) => {
         </div>
       </div>
 
-      {/* Dropdowns */}
+      {/* Area of Interest - Multi-select using shadcn */}
       <div className="grid gap-4">
         <div>
           <label className="block font-medium text-black mb-1">
             Area of Interest
           </label>
-          <Field
-            as="select"
-            name="proficiency.react"
-            className="input w-full border text-black rounded px-3 py-2 text-sm"
-          >
-            <option value="">Select Interest</option>
-            <option>Environment</option>
-            <option>Education</option>
-            <option>Health</option>
-            <option>Animal Welfare</option>
-            <option>Disability Support</option>
-            <option>Senior Support</option>
-          </Field>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                className={cn(
+                  "w-full justify-between",
+                  !selectedInterests.length && "text-muted-foreground"
+                )}
+              >
+                {selectedInterests.length > 0
+                  ? selectedInterests.join(", ")
+                  : "Select interests"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                {interestOptions.map((option) => (
+                  <CommandItem
+                    key={option}
+                    onSelect={() => toggleInterest(option)}
+                    className="flex items-center space-x-2 cursor-pointer"
+                  >
+                    <Checkbox
+                      checked={selectedInterests.includes(option)}
+                      onCheckedChange={() => toggleInterest(option)}
+                    />
+                    <span>{option}</span>
+                  </CommandItem>
+                ))}
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
-
-        {/* <div>
-          <label className="block font-medium text-gray-700 mb-1">
-            Total Years of Experience
-          </label>
-          <Field
-            name="experience"
-            className="input w-full border rounded px-3 py-2 text-sm"
-            placeholder="Enter years of experience"
-          />
-        </div> */}
       </div>
 
-      {/* Navigation buttons */}
+      {/* Navigation Buttons */}
       {/* <div className="flex justify-between mt-8">
         <button
           type="button"

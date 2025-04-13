@@ -7,6 +7,7 @@ import AuthPage from "./pages/auth/AuthPage";
 import VolunteerPage from "./pages/volunteer/VolunteerPage";
 import NgoPage from "./pages/ngo/NgoPage";
 import ProfilePage from "./pages/volunteer/pages/profile/ProfilePage";
+import ExploreActivities from "./pages/volunteer/pages/feed/ExploreActivities";
 // import { RootState } from "./store/store";
 
 // // Lazy-loaded components
@@ -42,7 +43,7 @@ function AppRouter() {
         <Routes>
           {auth ? (
             <Route element={<MainLayout />}>
-              <Route path="/volunteer/*" element={<ProfilePage />} />
+              <Route path="/volunteer/*" element={<VolunteerPage />} />
               {/* <Route path="/volunteer/*" element={<VolunteerPage />} /> */}
               <Route path="/ngo/*" element={<NgoPage />} />
               <Route path="*" element={<Navigate to="/volunteer" />} />

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Formik, Form } from "formik";
 import Step1 from "./component/Step1PersonalInfo";
-import Step2 from "./component/Step2Education";
 import Step3 from "./component/Step3Skills";
 import Step4 from "./component/Step4Address";
 import { FormValues } from "./component/FormValues";
