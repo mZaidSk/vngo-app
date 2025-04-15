@@ -104,6 +104,7 @@ const ProfileForm = () => {
     const [formValues, setFormValues] = useState(defaultInitialValues);
     const totalSteps = steps.length;
     const CurrentStep = stepComponents[step];
+    const isLastStep = step === steps.length - 1;
 
     const nextStep = () => setStep((s) => Math.min(s + 1, totalSteps - 1));
     const prevStep = () => setStep((s) => Math.max(s - 1, 0));
@@ -172,20 +173,62 @@ const ProfileForm = () => {
             gallery_urls: values.galleryUrls,
         };
 
-        if (isEditMode) {
-            dispatch(updateNgoProfile({ id: profileId, payload })).then(
-                (res: any) => {
+        if (isLastStep) {
+            if (isEditMode) {
+                dispatch(updateNgoProfile({ id: profileId, payload })).then(
+                    (res: any) => {
+                        toast(res?.payload?.message);
+                        navigate("/ngo/profile");
+                    }
+                );
+            } else {
+                dispatch(createNgoProfile(payload)).then((res: any) => {
                     toast(res?.payload?.message);
                     navigate("/ngo/profile");
-                }
-            );
+                });
+            }
         } else {
-            dispatch(createNgoProfile(payload)).then((res: any) => {
-                toast(res?.payload?.message);
-                navigate("/ngo/profile");
-            });
+            nextStep();
         }
     };
+
+    const validationSchemas = [
+        Yup.object({
+            ngoName: Yup.string().required("NGO name is required"),
+            mission: Yup.string().required("Mission is required"),
+            focusAreas: Yup.string().required("Focus areas are required"),
+            foundedYear: Yup.string().required("Founded year is required"),
+        }),
+        Yup.object({
+            email: Yup.string()
+                .email("Invalid email")
+                .required("Email is required"),
+            phone: Yup.string().required("Phone number is required"),
+            website: Yup.string().url("Invalid URL").nullable(),
+        }),
+        Yup.object({
+            addressLine1: Yup.string().required("Address Line 1 is required"),
+            city: Yup.string().required("City is required"),
+            state: Yup.string().required("State is required"),
+            postalCode: Yup.string().required("Postal Code is required"),
+            country: Yup.string().required("Country is required"),
+        }),
+        Yup.object({
+            twitter: Yup.string().url("Invalid Twitter URL").nullable(),
+            instagram: Yup.string().url("Invalid Instagram URL").nullable(),
+            linkedin: Yup.string().url("Invalid LinkedIn URL").nullable(),
+            youtube: Yup.string().url("Invalid YouTube URL").nullable(),
+        }),
+        Yup.object({
+            logoUrl: Yup.string()
+                .url("Invalid Logo URL")
+                .required("Logo URL is required"),
+            bannerUrl: Yup.string().url("Invalid Banner URL").nullable(),
+            galleryUrls: Yup.array().of(
+                Yup.string().url("Must be a valid image URL")
+            ),
+        }),
+    ];
 
     return (
         <div className="max-w-6xl mx-auto">
@@ -222,6 +265,7 @@ const ProfileForm = () => {
                         <Formik
                             enableReinitialize
                             initialValues={formValues}
+                            validationSchema={validationSchemas[step]}
                             onSubmit={handleSubmit}
                         >
                             <Form>
@@ -242,24 +286,9 @@ const ProfileForm = () => {
                                     >
                                         Back
                                     </Button>
-                                    {step === totalSteps - 1 ? (
-                                        <Button
-                                            type="submit"
-                                            className="rounded-full"
-                                        >
-                                            {isEditMode
-                                                ? "Update Profile"
-                                                : "Submit"}
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            type="button"
-                                            onClick={nextStep}
-                                            className="rounded-full"
-                                        >
-                                            Next Step
-                                        </Button>
-                                    )}
+                                    <Button type="submit">
+                                        {isLastStep ? "Submit" : "Next Step"}
+                                    </Button>
                                 </div>
                             </Form>
                         </Formik>

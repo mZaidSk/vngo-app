@@ -3,12 +3,14 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import authReducer from "./slice/AuthSlice"; // Import the auth slice
 import ngoProfileReducer from "./slice/NgoProfileSlice";
+import activityReducer from "./slice/ActivitySlice";
 
 // Configure the store
 const store = configureStore({
     reducer: {
         auth: authReducer, // Add reducers here
         ngoProfile: ngoProfileReducer, // Add reducers here
+        activity: activityReducer, // Add reducers here
     },
 });
 

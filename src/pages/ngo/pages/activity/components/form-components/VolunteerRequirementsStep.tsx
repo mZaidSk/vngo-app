@@ -1,24 +1,18 @@
 import React from "react";
+import { useFormikContext } from "formik";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-interface VolunteerRequirementsStepProps {
-    values: any;
-    handleChange: (e: React.ChangeEvent<any>) => void;
-    setFieldValue: (field: string, value: any) => void;
-}
-
-export const VolunteerRequirementsStep: React.FC<
-    VolunteerRequirementsStepProps
-> = ({ values, handleChange, setFieldValue }) => {
+export const VolunteerRequirementsStep: React.FC = () => {
+    const { values, handleChange, setFieldValue } = useFormikContext<any>();
     const [skillInput, setSkillInput] = React.useState("");
 
     const addSkill = () => {
         if (skillInput.trim()) {
-            setFieldValue("requiredSkills", [
-                ...(values.requiredSkills || []),
+            setFieldValue("skills", [
+                ...(values.skills || []),
                 skillInput.trim(),
             ]);
             setSkillInput("");
@@ -27,10 +21,8 @@ export const VolunteerRequirementsStep: React.FC<
 
     const removeSkill = (skillToRemove: string) => {
         setFieldValue(
-            "requiredSkills",
-            values.requiredSkills.filter(
-                (skill: string) => skill !== skillToRemove
-            )
+            "skills",
+            values.skills.filter((skill: string) => skill !== skillToRemove)
         );
     };
 
@@ -95,17 +87,15 @@ export const VolunteerRequirementsStep: React.FC<
                     </Button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                    {(values.requiredSkills || []).map(
-                        (skill: string, idx: number) => (
-                            <Badge
-                                key={idx}
-                                className="cursor-pointer"
-                                onClick={() => removeSkill(skill)}
-                            >
-                                {skill} ✕
-                            </Badge>
-                        )
-                    )}
+                    {(values.skills || []).map((skill: string, idx: number) => (
+                        <Badge
+                            key={idx}
+                            className="cursor-pointer"
+                            onClick={() => removeSkill(skill)}
+                        >
+                            {skill} ✕
+                        </Badge>
+                    ))}
                 </div>
             </div>
         </div>

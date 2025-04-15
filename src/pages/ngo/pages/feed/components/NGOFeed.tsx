@@ -11,6 +11,11 @@ import {
     Share2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { getAllActivities } from "@/store/slice/ActivitySlice";
+import { useEffect } from "react";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 const activities = [
     {
@@ -48,6 +53,21 @@ const activities = [
 ];
 
 const NGOFeed = () => {
+    const dispatch = useDispatch<AppDispatch>();
+    const activitySelector = useSelector(
+        (state: RootState) => state.activity.activities
+    );
+
+    const activities = activitySelector?.data;
+
+    const getActivities = async () => {
+        dispatch(getAllActivities());
+    };
+
+    useEffect(() => {
+        getActivities();
+    }, []);
+
     return (
         <div className="p-6 space-y-4 max-w-4xl mx-auto">
             <div className="flex justify-between items-center">
@@ -72,87 +92,124 @@ const NGOFeed = () => {
                 </select>
             </div>
 
-            {activities.map((activity, index) => (
-                <Card key={index} className="rounded-xl shadow-md">
-                    <CardContent className="p-4">
-                        <div className="flex items-start gap-4">
-                            <Avatar>
-                                <AvatarFallback>
-                                    {activity.ngoName[0]}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <Link to={"/ngo/profile/:id"}>
-                                            <p className="font-semibold">
-                                                {activity.ngoName}
+            {activities?.length &&
+                activities.map((activity: any, index: any) => (
+                    <Card key={index} className="rounded-xl shadow-md">
+                        <CardContent className="p-4">
+                            <div className="flex items-start gap-4">
+                                <Avatar>
+                                    <AvatarImage
+                                        src={activity?.ngoProfile?.logo_url}
+                                        alt={
+                                            activity?.ngoProfile
+                                                ?.organization_name
+                                        }
+                                    />
+                                    <AvatarFallback>
+                                        {
+                                            activity?.ngoProfile
+                                                ?.organization_name[0]
+                                        }
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <Link
+                                                to={`/ngo/profile/${activity?.ngoProfile}`}
+                                            >
+                                                <p className="font-semibold">
+                                                    {
+                                                        activity?.ngoProfile
+                                                            ?.organization_name
+                                                    }
+                                                </p>
+                                            </Link>
+                                            <p className="text-sm text-muted-foreground">
+                                                {activity?.ngoProfile?.city}
                                             </p>
-                                        </Link>
-                                        <p className="text-sm text-muted-foreground">
-                                            {activity.location}
-                                        </p>
-                                    </div>
-                                    <Badge variant="outline">
-                                        {activity.status}
-                                    </Badge>
-                                </div>
-                                <div className="bg-muted h-32 mt-4 rounded-lg flex items-center justify-center text-muted-foreground">
-                                    Activity Cover Image
-                                </div>
-                                <h2 className="mt-4 text-lg font-medium">
-                                    {activity.title}
-                                </h2>
-                                <p className="text-sm text-muted-foreground">
-                                    {activity.description}
-                                </p>
-
-                                <div className="flex flex-wrap gap-2 mt-2">
-                                    {activity.tags.map((tag, i) => (
-                                        <Badge key={i} variant="secondary">
-                                            #{tag}
+                                        </div>
+                                        <Badge variant="outline">
+                                            {activity?.status}
                                         </Badge>
-                                    ))}
-                                </div>
+                                    </div>
+                                    <div className="h-36 mt-4 rounded-lg">
+                                        <img
+                                            src={activity?.bannerImage}
+                                            alt="NGO Cover Banner"
+                                            className="w-full h-full object-cover rounded-sm"
+                                        />
+                                    </div>
+                                    <h2 className="mt-4 text-lg font-medium">
+                                        {activity.title}
+                                    </h2>
+                                    <p className="text-sm text-muted-foreground">
+                                        {activity.description}
+                                    </p>
 
-                                <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                                    <div className="flex items-center gap-1">
-                                        <Calendar size={14} /> {activity.date}
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {activity.skills.map(
+                                            (skill: any, i: any) => (
+                                                <Badge
+                                                    key={i}
+                                                    variant="secondary"
+                                                >
+                                                    #{skill}
+                                                </Badge>
+                                            )
+                                        )}
                                     </div>
-                                    <div className="flex items-center gap-1">
-                                        <Clock size={14} /> {activity.time}
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <Users size={14} />{" "}
-                                        {activity.volunteers} volunteers
-                                    </div>
-                                </div>
 
-                                <div className="flex items-center justify-between mt-4">
-                                    <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                                    <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
                                         <div className="flex items-center gap-1">
-                                            <Heart size={16} /> {activity.likes}
+                                            <Calendar size={14} />{" "}
+                                            {activity.startDate} to{" "}
+                                            {activity.endDate}
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <MessageCircle size={16} />{" "}
-                                            {activity.comments}
+                                            <Clock size={14} />{" "}
+                                            {activity.startTime} to{" "}
+                                            {activity.endTime} (
+                                            {activity.duration})
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <Share2 size={16} />{" "}
-                                            {activity.shares}
+                                            <Users size={14} />{" "}
+                                            {Math.abs(
+                                                activity.spotsLeft -
+                                                    activity.totalSpots
+                                            )}
+                                            /{activity.totalSpots} volunteers
                                         </div>
                                     </div>
-                                    <Link to={"/ngo/activities/:id"}>
-                                        <Button className="cursor-pointer">
-                                            {activity.buttonLabel}
-                                        </Button>
-                                    </Link>
+
+                                    <div className="flex items-center justify-between mt-4">
+                                        <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                                            <div className="flex items-center gap-1">
+                                                <Heart size={16} />{" "}
+                                                {activity?.likes || 33}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <MessageCircle size={16} />{" "}
+                                                {activity?.comments || 23}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <Share2 size={16} />{" "}
+                                                {activity?.shares || 3}
+                                            </div>
+                                        </div>
+                                        <Link
+                                            to={`/ngo/activities/${activity?.id}`}
+                                        >
+                                            <Button className="cursor-pointer">
+                                                View Details
+                                            </Button>
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            ))}
+                        </CardContent>
+                    </Card>
+                ))}
         </div>
     );
 };

@@ -9,14 +9,11 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { CalendarIcon, Grid2X2Icon, UsersIcon } from "lucide-react";
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { getActivitiesByNgoId } from "@/store/slice/ActivitySlice";
+import { useEffect } from "react";
 
 // Mock Stats & Activities Data
 const stats = [
@@ -37,40 +34,41 @@ const stats = [
     },
 ];
 
-const activities = [
-    {
-        id: 1,
-        title: "Beach Cleanup Drive",
-        date: "Mar 15, 2025",
-        status: "Upcoming",
-        description:
-            "Join us for our monthly beach cleanup initiative to protect marine life and keep our shores clean.",
-        volunteers: 45,
-        time: "9:00 AM - 2:00 PM",
-    },
-    {
-        id: 2,
-        title: "Tree Plantation Campaign",
-        date: "Apr 2, 2025",
-        status: "Upcoming",
-        description:
-            "Be part of our tree planting mission to make the city greener and healthier.",
-        volunteers: 30,
-        time: "10:00 AM - 1:00 PM",
-    },
-    {
-        id: 3,
-        title: "Blood Donation Drive",
-        date: "Feb 20, 2025",
-        status: "Past",
-        description:
-            "Help save lives by donating blood. A small act of kindness can go a long way.",
-        volunteers: 60,
-        time: "11:00 AM - 3:00 PM",
-    },
-];
-
 const Activity = () => {
+    const activitySelector = useSelector(
+        (state: RootState) => state.activity.activities
+    );
+    const dispatch = useDispatch<AppDispatch>();
+
+    const getActivity = () => {
+        dispatch(getActivitiesByNgoId()).then((res: any) => console.log(res));
+    };
+
+    useEffect(() => {
+        getActivity();
+    }, []);
+
+    const stats = [
+        {
+            label: "Total Activities",
+            value: activitySelector?.data?.length,
+            icon: <CalendarIcon className="w-6 h-6 text-muted-foreground" />,
+        },
+        {
+            label: "Upcoming Activities",
+            value:
+                activitySelector?.data?.filter(
+                    (activity: any) => activity.status === "Upcoming"
+                )?.length || 0,
+            icon: <Grid2X2Icon className="w-6 h-6 text-muted-foreground" />,
+        },
+        {
+            label: "Total Volunteers",
+            value: 156,
+            icon: <UsersIcon className="w-6 h-6 text-muted-foreground" />,
+        },
+    ];
+
     return (
         <div className="p-6 space-y-6 max-w-6xl mx-auto">
             {/* Stats Section */}
@@ -128,7 +126,7 @@ const Activity = () => {
                 </Select>
                 <Button variant="ghost">Reset Filters</Button>
 
-                <Link to="add" className="ml-auto">
+                <Link to="form" className="ml-auto">
                     <Button className="cursor-pointer">
                         + Create Activity
                     </Button>
@@ -137,41 +135,64 @@ const Activity = () => {
 
             {/* Activities Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {activities.map((activity) => (
-                    <Card key={activity.id} className="overflow-hidden">
-                        <div className="bg-muted h-32 flex items-center justify-center text-muted-foreground">
-                            Activity Cover Image
-                        </div>
-                        <CardContent className="p-4 space-y-2">
-                            <div className="text-sm text-blue-600 font-medium">
-                                {activity.status} • {activity.date}
+                {activitySelector?.data && activitySelector.data.length > 0 ? (
+                    activitySelector.data.map((activity: any) => (
+                        <Card key={activity.id} className="overflow-hidden">
+                            <div className="h-32 w-full bg-muted flex items-center justify-center">
+                                {activity.bannerImage ? (
+                                    <img
+                                        src={activity.bannerImage}
+                                        alt={activity.title}
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-muted-foreground">
+                                        No Image Available
+                                    </span>
+                                )}
                             </div>
-                            <h4 className="text-lg font-semibold">
-                                {activity.title}
-                            </h4>
-                            <p className="text-sm text-muted-foreground">
-                                {activity.description}
-                            </p>
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-muted-foreground">
-                                    {activity.volunteers} Volunteers
-                                </span>
-                                <span className="text-muted-foreground">
-                                    {activity.time}
-                                </span>
-                            </div>
-                            <Link to={`${activity.id}`}>
-                                <Button className="w-full cursor-pointer">
-                                    View Details
-                                </Button>
-                            </Link>
-                        </CardContent>
-                    </Card>
-                ))}
+                            <CardContent className="flex flex-col justify-between h-full p-4 space-y-2">
+                                <div className="space-y-2">
+                                    <div className="text-sm text-blue-600 font-medium">
+                                        {activity.status} •{" "}
+                                        {new Date(
+                                            activity.startDate
+                                        ).toLocaleDateString()}
+                                    </div>
+                                    <h4 className="text-lg font-semibold">
+                                        {activity.title}
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground line-clamp-2">
+                                        {activity.description}
+                                    </p>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-muted-foreground">
+                                            {activity.spotsLeft ?? 0} Spots Left
+                                        </span>
+                                        <span className="text-muted-foreground">
+                                            {activity.duration}
+                                        </span>
+                                    </div>
+                                    <Link to={`${activity.id}`}>
+                                        <Button className="w-full cursor-pointer">
+                                            View Details
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))
+                ) : (
+                    <div className="col-span-full text-center text-muted-foreground text-lg py-10 h-72">
+                        No Activities Available
+                    </div>
+                )}
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-center">
+            {/* <div className="flex justify-center">
                 <Pagination>
                     <PaginationContent>
                         <PaginationItem>
@@ -193,7 +214,7 @@ const Activity = () => {
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>
-            </div>
+            </div> */}
         </div>
     );
 };

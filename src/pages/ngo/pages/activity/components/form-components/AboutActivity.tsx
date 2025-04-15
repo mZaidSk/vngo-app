@@ -1,17 +1,12 @@
 import React from "react";
+import { useFormikContext } from "formik";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface AboutActivityProps {
-    values: any;
-    handleChange: (e: React.ChangeEvent<any>) => void;
-}
+const AboutActivity: React.FC = () => {
+    const { values, handleChange } = useFormikContext<any>();
 
-const AboutActivity: React.FC<AboutActivityProps> = ({
-    values,
-    handleChange,
-}) => {
     return (
         <div className="space-y-4">
             <h2 className="text-lg font-semibold">📖 About The Activity</h2>

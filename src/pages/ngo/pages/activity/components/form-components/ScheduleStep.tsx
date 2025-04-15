@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useFormikContext } from "formik";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -9,19 +10,11 @@ import {
     SelectItem,
 } from "@/components/ui/select";
 
-interface ScheduleStepProps {
-    values: any;
-    handleChange: (e: React.ChangeEvent<any>) => void;
-    setFieldValue: (field: string, value: any) => void;
-}
-
 const timezones = ["UTC", "GMT", "IST", "EST", "PST", "CST", "MST"];
 
-export const ScheduleStep: React.FC<ScheduleStepProps> = ({
-    values,
-    handleChange,
-    setFieldValue,
-}) => {
+export const ScheduleStep: React.FC = () => {
+    const { values, handleChange, setFieldValue } = useFormikContext<any>();
+
     // Auto-calculate duration
     useEffect(() => {
         const { startDate, endDate, startTime, endTime } = values;
