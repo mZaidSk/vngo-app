@@ -1,7 +1,7 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, SearchIcon } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -53,15 +53,28 @@ const ActivityFilters: React.FC<ActivityFiltersProps> = ({
   resetFilters,
 }) => {
   return (
-    <div className="mb-6">
+    <div className="p-6 bg-white">
       {/* Filter Inputs */}
       <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4 items-center mb-4">
-        <Input
+        <div className="mb-3 relative col-span-2 w-full">
+          <span className="absolute left-3 top-3 text-gray-400">
+            <SearchIcon className="h-5 w-5" />
+          </span>
+          <input
+            type="text"
+            placeholder="Search for activities..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 shadow-sm focus:outline-none focus:ring-1 text-sm placeholder:text-gray-400"
+          />
+        </div>
+        {/* <Input
           placeholder="Search for activities..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="col-span-2 w-full bg-white"
-        />
+          
+        /> */}
 
         <Select onValueChange={setSelectedStatus} value={selectedStatus}>
           <SelectTrigger className="bg-white w-full">
@@ -96,9 +109,10 @@ const ActivityFilters: React.FC<ActivityFiltersProps> = ({
           </PopoverContent>
         </Popover>
 
+        {/* Reset Button */}
         <Button
           variant="ghost"
-          className="text-black hover:bg-red-50 w-full"
+          className="text-red-600 hover:bg-red-100 transition-colors w-full"
           onClick={resetFilters}
         >
           Reset Filters
@@ -106,15 +120,15 @@ const ActivityFilters: React.FC<ActivityFiltersProps> = ({
       </div>
 
       {/* Tag Badges */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap pt-2 gap-3">
         {tagOptions.map((tag) => (
           <Badge
             key={tag}
             onClick={() => setSelectedTag(tag)}
-            className={`cursor-pointer px-3 py-1 text-sm ${
+            className={`cursor-pointer px-4 py-1.5 rounded-full transition-colors text-sm font-medium ${
               tag === selectedTag
                 ? "bg-black text-white"
-                : "bg-gray-100 text-black"
+                : "bg-gray-100 text-gray-800 hover:bg-[#daffe4]"
             }`}
           >
             {tag}

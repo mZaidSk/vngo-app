@@ -3,11 +3,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   CalendarIcon,
-  MapPinIcon,
   Heart,
   MessageCircle,
   Share2,
   Bookmark,
+  UsersIcon,
+  ClockIcon,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
@@ -24,9 +25,10 @@ interface Activity {
   likes: number;
   comments: any[];
   ngoName: string;
+  spots: any;
 }
 
-interface ActivityCardProps {
+interface FeedActivityCardProps {
   activity: Activity;
   onLike: (id: string) => void;
   onComment: (id: string) => void;
@@ -37,7 +39,7 @@ interface ActivityCardProps {
   onToggleBookmark: (id: string) => void;
 }
 
-const ActivityCard: React.FC<ActivityCardProps> = ({
+const FeedActivityCard: React.FC<FeedActivityCardProps> = ({
   activity,
   onLike,
   onComment,
@@ -103,14 +105,26 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
         </div>
 
         {/* Date & Location */}
-        <div className="flex flex-col sm:flex-row gap-2 text-sm text-gray-600">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4 text-sm text-gray-600 mt-2">
+          {/* Date */}
           <div className="flex items-center gap-1">
             <CalendarIcon className="w-4 h-4" />
-            {format(new Date(activity.date), "PPP • p")}
+            {format(new Date(activity.date), "PPP")}
           </div>
+
+          {/* Time */}
           <div className="flex items-center gap-1">
-            <MapPinIcon className="w-4 h-4" />
-            {activity.location}
+            <ClockIcon className="w-4 h-4" />
+            {"9:00 AM - 5:00 PM"}
+          </div>
+
+          {/* Volunteers */}
+          <div className="flex items-center gap-1">
+            <UsersIcon className="w-4 h-4 text-green-600" />
+            <span className="font-medium text-gray-700">
+              {activity.spots.available}/{activity.spots.total}
+            </span>{" "}
+            volunteers
           </div>
         </div>
 
@@ -181,4 +195,4 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
   );
 };
 
-export default ActivityCard;
+export default FeedActivityCard;

@@ -2,7 +2,8 @@ export const activityDataArray = [
   {
     id: "1",
     title: "Beach Cleanup Drive",
-    organizer: "Ocean Conservation Society - Environmental NGO",
+    ngoName: "Ocean Conservation Society - Environmental NGO",
+
     banner: "Project Banner Image",
     about:
       "Join us in our mission to keep our beaches clean and protect marine life. We organize monthly cleanup drives to remove plastic waste and debris from our beautiful coastlines.",
@@ -53,7 +54,7 @@ export const activityDataArray = [
   {
     id: "2",
     title: "Tree Plantation Drive",
-    organizer: "Green Earth Foundation",
+    ngoName: "Green Earth Foundation",
     banner: "Tree Plantation Banner",
     about:
       "Join us to make our city greener! Help plant saplings and learn about native tree species that support local ecosystems.",
@@ -103,7 +104,7 @@ export const activityDataArray = [
   {
     id: "3",
     title: "Animal Shelter Volunteering",
-    organizer: "Paws & Whiskers Rescue",
+    ngoName: "Paws & Whiskers Rescue",
     banner: "Animal Shelter Event Poster",
     about:
       "Spend your weekend helping rescued animals! Assist with feeding, cleaning, and socializing furry friends waiting for forever homes.",

@@ -13,9 +13,9 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import volunteerProfile from "../data/volunteerData";
 
 // Simulated imported user data (replace later with backend data)
-import volunteerProfile from "./data/volunteerData";
 
 type FieldKey = "current" | "newPassword" | "confirm";
 

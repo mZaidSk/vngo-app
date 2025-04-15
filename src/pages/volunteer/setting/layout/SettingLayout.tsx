@@ -1,11 +1,11 @@
 import { NavLink, Outlet } from "react-router-dom";
 
 const sections = [
-  { name: "Profile", path: "" },
+  { name: "General Settings", path: "" },
   { name: "Security", path: "security" },
   { name: "Notifications", path: "notifications" },
-  { name: "Privacy", path: "privacy" },
-  { name: "Account Actions", path: "account-actions" },
+  { name: "Privacy Policy", path: "privacy" },
+  { name: "Terms & Condition", path: "tc" },
 ];
 
 export default function SettingsLayout() {

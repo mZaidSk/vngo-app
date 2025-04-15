@@ -1,18 +1,23 @@
+export interface Education {
+  qualification: string;
+  fieldOfStudy: string;
+  institution: string;
+  graduationYear: string;
+  gpa: string;
+}
+
 export interface FormValues {
+  profileImage: any;
   firstName: string;
   lastName: string;
   dob: string;
   gender: string;
   phone: string;
   email: string;
-  qualification: string;
-  fieldOfStudy: string;
-  institution: string;
-  graduationYear: string;
-  gpa: string;
+  education: Education[];
   skills: string[];
   customSkill: string;
-  interest: string;
+  interests: string[]; // ✅ Changed from interest: string to interests: string[]
   experience: string;
   address: string;
   city: string;

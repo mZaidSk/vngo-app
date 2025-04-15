@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import ActivityCard from "../component/activity/ActivityCard";
 import ActivityFilters from "../component/activity/ActivityFilters";
 import { useState } from "react";
 import { activityDataArray } from "../component/data/activityData";
 import CommentPanel from "../activity/CommentPanel";
 import ApplyModal from "../activity/ApplyModal";
 import volunteerProfile from "../../setting/data/volunteerData";
+import FeedActivityCard from "@/components/common/FeedCard";
 
 export default function ExploreActivitiesPage() {
   const [search, setSearch] = useState("");
@@ -76,63 +76,69 @@ export default function ExploreActivitiesPage() {
   };
 
   return (
-    <div className="p-6 bg-[#E6F4EA] min-h-screen">
-      <h1 className="text-2xl font-bold mb-6">Explore Activities</h1>
-
-      <ActivityFilters
-        search={search}
-        setSearch={setSearch}
-        selectedStatus={selectedStatus}
-        setSelectedStatus={setSelectedStatus}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        selectedTag={selectedTag}
-        setSelectedTag={setSelectedTag}
-        resetFilters={() => {
-          setSearch("");
-          setSelectedStatus("All");
-          setSelectedDate(null);
-          setSelectedTag("All Tags");
-        }}
-      />
-      {/* Activity Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredActivities.map((activity: any) => (
-          <ActivityCard
-            key={activity.id}
-            activity={activity}
-            onLike={handleLike} // Define your handleLike function as needed
-            onComment={handleAddComment} // Define your handleAddComment function as needed
-            onShare={handleShare} // Define your handleShare function as needed
-            onViewDetails={handleViewDetails} // Define your handleViewDetails function as needed
-            onApply={openApplyModal} // Define your openApplyModal function as needed
-            onToggleBookmark={handleBookmarkToggle}
-            isBookmarked={volunteerProfile.bookmarkedActivities.includes(
-              activity.id
-            )}
-          />
-        ))}
+    <div className="bg-white">
+      <h1 className="text-xl font-bold px-4 pt-2">Explore Activities</h1>
+      <div className="sticky top-15 z-20 bg-[#E6F4EA] w-full ">
+        <ActivityFilters
+          search={search}
+          setSearch={setSearch}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          selectedTag={selectedTag}
+          setSelectedTag={setSelectedTag}
+          resetFilters={() => {
+            setSearch("");
+            setSelectedStatus("All");
+            setSelectedDate(null);
+            setSelectedTag("All Tags");
+          }}
+        />
       </div>
+      <div className="p-6 bg-muted min-h-screen">
+        <div className="max-w-4xl mx-auto">
+          {/* Activity Cards */}
+          <div className="space-y-6 mt-6">
+            {filteredActivities.map((activity: any) => (
+              <FeedActivityCard
+                key={activity.id}
+                activity={activity}
+                onLike={handleLike}
+                onComment={handleAddComment}
+                onShare={handleShare}
+                onViewDetails={handleViewDetails}
+                onApply={openApplyModal}
+                onToggleBookmark={handleBookmarkToggle}
+                isBookmarked={volunteerProfile.bookmarkedActivities.includes(
+                  activity.id
+                )}
+              />
+            ))}
+          </div>
+        </div>
 
-      {/* Slide-in Comment Panel */}
-      {isCommentPanelOpen && selectedActivityId && (
-        <CommentPanel
-          activityId={selectedActivityId}
-          comments={
-            activities.find((a) => a.id === selectedActivityId)?.comments || []
-          }
-          onClose={() => setIsCommentPanelOpen(false)}
-        />
-      )}
+        {/* Slide-in Comment Panel */}
+        {isCommentPanelOpen && selectedActivityId && (
+          <CommentPanel
+            activityId={selectedActivityId}
+            comments={
+              activities.find((a) => a.id === selectedActivityId)?.comments ||
+              []
+            }
+            onClose={() => setIsCommentPanelOpen(false)}
+          />
+        )}
 
-      {/* Apply Modal */}
-      {isModalOpen && selectedActivity && (
-        <ApplyModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          activity={selectedActivity}
-        />
-      )}
+        {/* Apply Modal */}
+        {isModalOpen && selectedActivity && (
+          <ApplyModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            activity={selectedActivity}
+          />
+        )}
+      </div>
     </div>
   );
 }

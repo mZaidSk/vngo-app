@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Field, FormikProps } from "formik";
+import { Field, useFormikContext } from "formik";
 import {
   Popover,
   PopoverContent,
@@ -7,14 +7,9 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Command, CommandItem } from "@/components/ui/command";
+import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Checkbox } from "@/components/ui/checkbox";
-
-interface Step3Props {
-  formik: FormikProps<any>;
-  onNext: () => void;
-  onBack: () => void;
-}
+import { FormValues } from "../data/FormValues"; // import your types
 
 const interestOptions = [
   "Environment",
@@ -25,32 +20,35 @@ const interestOptions = [
   "Senior Support",
 ];
 
-const Step3: React.FC<Step3Props> = ({ formik, onNext, onBack }) => {
+const Step3: React.FC = () => {
   const [customSkill, setCustomSkill] = useState("");
   const [open, setOpen] = useState(false);
 
-  const selectedInterests = formik.values.interests || [];
+  const { values, errors, touched, setFieldValue } =
+    useFormikContext<FormValues>();
+  const selectedInterests = values.interests || [];
 
   const addCustomSkill = () => {
-    if (customSkill.trim() && !formik.values.skills.includes(customSkill)) {
-      formik.setFieldValue("skills", [...formik.values.skills, customSkill]);
+    if (customSkill.trim() && !values.skills.includes(customSkill)) {
+      setFieldValue("skills", [...values.skills, customSkill]);
       setCustomSkill("");
     }
   };
 
   const toggleInterest = (interest: string) => {
     const updated = selectedInterests.includes(interest)
-      ? selectedInterests.filter((item: string) => item !== interest)
+      ? selectedInterests.filter((item) => item !== interest)
       : [...selectedInterests, interest];
 
-    formik.setFieldValue("interests", updated);
+    setFieldValue("interests", updated);
   };
+
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6 text-black">Skills</h2>
+    <div className="space-y-8">
+      <h2 className="text-2xl font-bold text-black">Skills</h2>
 
       {/* Technical Skills */}
-      <div className="mb-6">
+      <div>
         <label className="block text-lg font-semibold text-black mb-2">
           Technical Skills
         </label>
@@ -62,8 +60,8 @@ const Step3: React.FC<Step3Props> = ({ formik, onNext, onBack }) => {
             </label>
           ))}
 
-          {/* Custom Skills */}
-          {formik.values.skills
+          {/* Custom Skill Tags */}
+          {values.skills
             ?.filter(
               (s: string) =>
                 !["JavaScript", "Python", "React", "Node.js", "SQL"].includes(s)
@@ -78,14 +76,14 @@ const Step3: React.FC<Step3Props> = ({ formik, onNext, onBack }) => {
             ))}
         </div>
 
-        {/* Add custom skill input */}
-        <div className="mt-4 flex gap-2">
+        {/* Add Custom Skill */}
+        <div className="mt-4 flex flex-col sm:flex-row gap-2">
           <input
             type="text"
             value={customSkill}
             onChange={(e) => setCustomSkill(e.target.value)}
             placeholder="Add custom skill"
-            className="input flex-1 border text-black rounded-md px-3 py-2 text-sm"
+            className="border text-black rounded-md px-3 py-2 text-sm w-full sm:w-auto flex-1"
           />
           <button
             type="button"
@@ -95,31 +93,38 @@ const Step3: React.FC<Step3Props> = ({ formik, onNext, onBack }) => {
             Add
           </button>
         </div>
+
+        {/* Skills Error */}
+        {touched.skills && errors.skills && (
+          <div className="text-red-500 text-sm mt-1">
+            {errors.skills as string}
+          </div>
+        )}
       </div>
 
-      {/* Area of Interest - Multi-select using shadcn */}
-      <div className="grid gap-4">
-        <div>
-          <label className="block font-medium text-black mb-1">
-            Area of Interest
-          </label>
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                className={cn(
-                  "w-full justify-between",
-                  !selectedInterests.length && "text-muted-foreground"
-                )}
-              >
-                {selectedInterests.length > 0
-                  ? selectedInterests.join(", ")
-                  : "Select interests"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
-              <Command>
+      {/* Area of Interest */}
+      <div>
+        <label className="block font-medium text-black mb-1">
+          Area of Interest
+        </label>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              className={cn(
+                "w-full justify-between",
+                !selectedInterests.length && "text-muted-foreground"
+              )}
+            >
+              {selectedInterests.length > 0
+                ? selectedInterests.join(", ")
+                : "Select interests"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0">
+            <Command>
+              <CommandGroup>
                 {interestOptions.map((option) => (
                   <CommandItem
                     key={option}
@@ -133,29 +138,18 @@ const Step3: React.FC<Step3Props> = ({ formik, onNext, onBack }) => {
                     <span>{option}</span>
                   </CommandItem>
                 ))}
-              </Command>
-            </PopoverContent>
-          </Popover>
-        </div>
-      </div>
+              </CommandGroup>
+            </Command>
+          </PopoverContent>
+        </Popover>
 
-      {/* Navigation Buttons */}
-      {/* <div className="flex justify-between mt-8">
-        <button
-          type="button"
-          onClick={onBack}
-          className="px-5 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
-        >
-          Back
-        </button>
-        <button
-          type="button"
-          onClick={onNext}
-          className="px-6 py-2 rounded bg-black text-white hover:bg-gray-900"
-        >
-          Next Step
-        </button>
-      </div> */}
+        {/* Interests Error */}
+        {touched.interests && errors.interests && (
+          <div className="text-red-500 text-sm mt-1">
+            {errors.interests as string}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
-const VolunteerPrivacySettings = () => {
+const VolunteerGeneralSettings = () => {
   const [allowContact, setAllowContact] = useState(false);
   const [showAvailability, setShowAvailability] = useState(false);
   const [participationVisibility, setParticipationVisibility] = useState(false);
@@ -21,7 +21,7 @@ const VolunteerPrivacySettings = () => {
   return (
     <Card className="max-w-4xl mx-auto p-8 bg-white rounded-2xl shadow-md">
       <CardHeader>
-        <h2 className="text-2xl font-bold text-gray-800">Privacy Settings</h2>
+        <h2 className="text-2xl font-bold text-gray-800">General Settings</h2>
         <p className="text-sm text-gray-500">
           Control your volunteer privacy preferences.
         </p>
@@ -142,4 +142,4 @@ const VolunteerPrivacySettings = () => {
   );
 };
 
-export default VolunteerPrivacySettings;
+export default VolunteerGeneralSettings;

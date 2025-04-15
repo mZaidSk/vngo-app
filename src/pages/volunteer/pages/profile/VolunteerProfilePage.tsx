@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { UserIcon } from "lucide-react";
-import volunteerProfile from "./data/volunteerData";
+import volunteerProfile from "./data/VolunteerData";
+import { Link } from "react-router-dom";
 
 export default function VolunteerProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -54,7 +55,28 @@ export default function VolunteerProfile() {
       interests: profileData.interests.filter((item) => item !== interest),
     });
   };
-
+  if (!profileData) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Card className="w-full max-w-md text-center shadow-lg border border-destructive/20">
+          <CardContent className="p-8 space-y-5">
+            <h2 className="text-2xl font-bold text-destructive">
+              Profile Not Found
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Your volunteer profile is missing. Please create one to get
+              started.
+            </p>
+            <Link to={"/volunteer/profile/create"}>
+              <Button size="lg" className="w-full cursor-pointer">
+                Create Profile
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   return (
     <div className="flex h-screen">
       <div className="flex-1 p-8">

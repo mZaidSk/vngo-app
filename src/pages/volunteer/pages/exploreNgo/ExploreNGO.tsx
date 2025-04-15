@@ -128,7 +128,7 @@ const ExploreNGOsPage = () => {
 
   return (
     <div className="p-6 bg-white min-h-screen">
-      <div className="sticky top-0 bg-white z-10 p-3 border-b shadow-sm">
+      <div className="sticky top-0 bg-white z-10 pb-3 px-4 border-b shadow-sm">
         <h1 className="text-2xl font-bold mb-2">Explore NGOs</h1>
         <p className="text-gray-600 mb-6">
           Discover organizations aligned with your values and make a real
