@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,6 +16,16 @@ import { GalleryStep } from "./form-components/GalleryStep";
 import { VolunteerRequirementsStep } from "./form-components/VolunteerRequirementsStep";
 import { RulesGuidelinesStep } from "./form-components/RulesGuidelinesStep";
 
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+    createActivity,
+    getActivityById,
+    updateActivity,
+} from "@/store/slice/ActivitySlice";
+import { toast } from "sonner";
+
 const steps = [
     "Basic Info",
     "About The Activity",
@@ -26,7 +36,49 @@ const steps = [
     "Rules & Guidelines",
 ];
 
-const initialValues = {
+const validationSchema = Yup.object({});
+
+// const defaultInitialValues = {
+//     detailedDescription:
+//         "Join us for a community clean-up event where volunteers will help beautify the local park.",
+//     goalsHighlights:
+//         "Promote environmental awareness, foster community bonding, and maintain a clean, safe environment.",
+//     pastEvents:
+//         "Last year, over 100 volunteers participated and collected 500 lbs of trash.",
+//     title: "Community Park Clean-Up Day",
+//     description:
+//         "A volunteer-driven effort to clean and restore our neighborhood park.",
+//     status: "Upcoming",
+//     organizationName: "Green Future Foundation",
+//     contactEmail: "contact@greenfuture.org",
+//     phoneNumber: "+1 (555) 123-4567",
+//     website: "https://www.greenfuture.org",
+//     startDate: "2025-05-20",
+//     endDate: "2025-05-20",
+//     startTime: "09:00",
+//     endTime: "14:00",
+//     timezone: "America/New_York",
+//     duration: "5 hours",
+//     venueName: "Central City Park",
+//     fullAddress: "123 Park Avenue, Springfield, NY 10001, USA",
+//     googleMapsUrl:
+//         "https://maps.google.com/?q=123+Park+Avenue+Springfield+NY+10001",
+//     image1: "https://via.placeholder.com/600x400.png?text=Event+Image+1",
+//     image2: "https://via.placeholder.com/600x400.png?text=Event+Image+2",
+//     image3: "https://via.placeholder.com/600x400.png?text=Event+Image+3",
+//     bannerImage: "https://via.placeholder.com/1200x400.png?text=Event+Banner",
+//     totalSpots: "150",
+//     spotsLeft: "87",
+//     minAge: "16",
+//     skills: ["Teamwork", "Environmental Awareness", "Litter Collection"],
+//     whatToBring: "Reusable water bottle, gloves, sunblock, and a hat.",
+//     safetyMeasures:
+//         "First-aid kits on site, safety briefing before event starts.",
+//     weatherAdvisory:
+//         "Event may be postponed in case of heavy rain. Please check updates on our website.",
+// };
+
+const defaultInitialValues = {
     detailedDescription: "",
     goalsHighlights: "",
     pastEvents: "",
@@ -58,41 +110,109 @@ const initialValues = {
     weatherAdvisory: "",
     bannerImage: null,
 };
-
-const validationSchema = Yup.object({});
-
 const ActivityForm = () => {
-    const [step, setStep] = useState(0);
-    const isLastStep = step === steps.length - 1;
+    const { id } = useParams();
+    const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
+    const activitySelector = useSelector(
+        (state: RootState) => state.activity.activity
+    );
 
+    const [step, setStep] = useState(0);
+    const [initialValues, setInitialValues] = useState(defaultInitialValues);
+
+    const isLastStep = step === steps.length - 1;
     const nextStep = () => setStep((s) => Math.min(s + 1, steps.length - 1));
     const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
-    const handleSubmit = (values: typeof initialValues) => {
+    const getActivity = async () => {
+        if (id) {
+            await dispatch(getActivityById(id));
+        }
+    };
+
+    useEffect(() => {
+        if (id) getActivity();
+    }, [id]);
+
+    useEffect(() => {
+        if (activitySelector && id) {
+            setInitialValues({
+                title: activitySelector?.data?.title || "",
+                description: activitySelector?.data?.description || "",
+                status: activitySelector?.data?.status || "Upcoming",
+                detailedDescription:
+                    activitySelector?.data?.detailedDescription || "",
+                goalsHighlights: activitySelector?.data?.goalsHighlights || "",
+                pastEvents: activitySelector?.data?.pastEvents || "",
+                startDate: activitySelector?.data?.startDate || "",
+                endDate: activitySelector?.data?.endDate || "",
+                startTime: activitySelector?.data?.startTime || "",
+                endTime: activitySelector?.data?.endTime || "",
+                timezone: activitySelector?.data?.timezone || "",
+                duration: activitySelector?.data?.duration || "",
+                venueName: activitySelector?.data?.venueName || "",
+                fullAddress: activitySelector?.data?.fullAddress || "",
+                googleMapsUrl: activitySelector?.data?.googleMapsUrl || "",
+                image1: activitySelector?.data?.image1 || null,
+                image2: activitySelector?.data?.image2 || null,
+                image3: activitySelector?.data?.image3 || null,
+                bannerImage: activitySelector?.data?.bannerImage || null,
+                totalSpots: activitySelector?.data?.totalSpots || "",
+                spotsLeft: activitySelector?.data?.spotsLeft || "",
+                minAge: activitySelector?.data?.minAge || "",
+                skills: activitySelector?.data?.skills || [],
+                whatToBring: activitySelector?.data?.whatToBring || "",
+                safetyMeasures: activitySelector?.data?.safetyMeasures || "",
+                weatherAdvisory: activitySelector?.data?.weatherAdvisory || "",
+                organizationName:
+                    activitySelector?.data?.ngoProfile?.organization_name || "",
+                contactEmail: activitySelector?.data?.ngoProfile?.email || "",
+                phoneNumber: activitySelector?.data?.ngoProfile?.phone || "",
+                website: activitySelector?.data?.ngoProfile?.website || "",
+            });
+        }
+    }, [activitySelector]);
+
+    const handleSubmit = (values: typeof defaultInitialValues) => {
         if (isLastStep) {
             console.log("Submitting:", values);
-            // TODO: Send values to backend or trigger action
+
+            if (id) {
+                dispatch(updateActivity({ id, payload: values })).then(
+                    (res: any) => {
+                        toast(res.payload.message);
+                        navigate(`/ngo/activities/${res?.payload?.data?.id}`);
+                    }
+                );
+            } else {
+                dispatch(createActivity(values)).then((res: any) => {
+                    toast(res.payload.message);
+                    navigate(`/ngo/activities/${id}`);
+                });
+            }
+            // TODO: handle final submission
         } else {
             nextStep();
         }
     };
 
-    const renderStepComponent = (step: number, formikProps: any) => {
+    const renderStepComponent = (step: number) => {
         switch (step) {
             case 0:
-                return <BasicActivityInfo {...formikProps} />;
+                return <BasicActivityInfo />;
             case 1:
-                return <AboutActivity {...formikProps} />;
+                return <AboutActivity />;
             case 2:
-                return <ScheduleStep {...formikProps} />;
+                return <ScheduleStep />;
             case 3:
-                return <VenueStep {...formikProps} />;
+                return <VenueStep />;
             case 4:
-                return <VolunteerRequirementsStep {...formikProps} />;
+                return <VolunteerRequirementsStep />;
             case 5:
-                return <GalleryStep {...formikProps} />;
+                return <GalleryStep />;
             case 6:
-                return <RulesGuidelinesStep {...formikProps} />;
+                return <RulesGuidelinesStep />;
             default:
                 return null;
         }
@@ -133,20 +253,19 @@ const ActivityForm = () => {
                 ))}
             </aside>
 
-            {/* Form Section */}
+            {/* Form */}
             <main className="flex-1">
                 <Formik
+                    enableReinitialize
                     initialValues={initialValues}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
                 >
-                    {(formikProps) => (
+                    {() => (
                         <Form>
                             <Card className="h-[640px] flex flex-col">
-                                {" "}
-                                {/* Set your desired height */}
                                 <CardContent className="space-y-4 pt-6 overflow-y-auto flex-1">
-                                    {renderStepComponent(step, formikProps)}
+                                    {renderStepComponent(step)}
                                 </CardContent>
                                 <div className="flex justify-between p-4 border-t mt-auto">
                                     <Button

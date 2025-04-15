@@ -1,18 +1,11 @@
 import React from "react";
+import { useFormikContext } from "formik";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface VenueStepProps {
-    values: any;
-    handleChange: (e: React.ChangeEvent<any>) => void;
-    setFieldValue: (field: string, value: any) => void;
-}
+export const VenueStep: React.FC = () => {
+    const { values, handleChange, setFieldValue } = useFormikContext<any>();
 
-export const VenueStep: React.FC<VenueStepProps> = ({
-    values,
-    handleChange,
-    setFieldValue,
-}) => {
     return (
         <div className="space-y-4">
             <h2 className="text-lg font-semibold">📍 Venue / Location</h2>
@@ -44,17 +37,31 @@ export const VenueStep: React.FC<VenueStepProps> = ({
             </div>
 
             <div>
-                <Label htmlFor="mapEmbedUrl" className="mb-2 block">
+                <Label htmlFor="googleMapsUrl" className="mb-2 block">
                     Google Maps Embed URL (or Latitude / Longitude)
                 </Label>
                 <Input
-                    id="mapEmbedUrl"
-                    name="mapEmbedUrl"
+                    id="googleMapsUrl"
+                    name="googleMapsUrl"
                     placeholder="https://maps.google.com/... or 37.7749,-122.4194"
-                    value={values.mapEmbedUrl}
+                    value={values.googleMapsUrl}
                     onChange={handleChange}
                 />
             </div>
+            {values?.googleMapsUrl && (
+                <div className="mt-4">
+                    <Label className="mb-2 block">Map Preview</Label>
+                    <iframe
+                        title="Google Maps Preview"
+                        src={values.googleMapsUrl}
+                        width="100%"
+                        height="300"
+                        allowFullScreen
+                        loading="lazy"
+                        style={{ border: 0 }}
+                    />
+                </div>
+            )}
         </div>
     );
 };

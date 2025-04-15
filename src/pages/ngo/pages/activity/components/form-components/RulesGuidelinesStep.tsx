@@ -1,17 +1,12 @@
 import React from "react";
+import { useFormikContext } from "formik";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 
-interface RulesGuidelinesStepProps {
-    values: any;
-    handleChange: (e: React.ChangeEvent<any>) => void;
-}
+export const RulesGuidelinesStep: React.FC = () => {
+    const { values, handleChange } = useFormikContext<any>();
 
-export const RulesGuidelinesStep: React.FC<RulesGuidelinesStepProps> = ({
-    values,
-    handleChange,
-}) => {
     return (
         <div className="space-y-4">
             <h2 className="text-lg font-semibold">📜 Rules & Guidelines</h2>

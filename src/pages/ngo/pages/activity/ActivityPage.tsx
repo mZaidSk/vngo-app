@@ -10,7 +10,8 @@ const ActivityPage = () => {
             <Route path="/" element={<Activity />} />
             <Route path="/:id" element={<ActivityDetails />} />
             <Route path="/:id/volunteer" element={<RegisteredVolunteer />} />
-            <Route path="/add" element={<ActivityForm />} />
+            <Route path="/form" element={<ActivityForm />} />
+            <Route path="/form/:id" element={<ActivityForm />} />
             {/* <Route path="/edit/:id" element={<AddEditActivity />} /> */}
             {/* <Route path="/register" element={<RegisterForm />} /> */}
         </Routes>

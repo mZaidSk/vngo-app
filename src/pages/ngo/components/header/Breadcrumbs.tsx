@@ -29,10 +29,10 @@ export const Breadcrumbs = () => {
                 const to = `/${pathnames.slice(0, index + 1).join("/")}`;
                 const isLast = index === pathnames.length - 1;
 
-                // 🛑 Skip numeric or UUID-looking segments (assumes it's an ID)
-                const isProbablyId = /^[0-9a-fA-F-]{10,}$/.test(value); // tweak as needed
+                // // 🛑 Skip numeric or UUID-looking segments (assumes it's an ID)
+                // const isProbablyId = /^[0-9a-fA-F-]{10,}$/.test(value); // tweak as needed
 
-                if (isProbablyId) return null;
+                // if (isProbablyId) return null;
 
                 const label = getBreadcrumbLabel(value, index);
 
