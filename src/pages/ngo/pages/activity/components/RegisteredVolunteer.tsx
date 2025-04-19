@@ -194,10 +194,6 @@ export default function RegisteredVolunteer() {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    disabled={
-                                                        application?.certificate
-                                                            ?.file_url
-                                                    }
                                                     onClick={() =>
                                                         generateCertificate(
                                                             application?.application_id,

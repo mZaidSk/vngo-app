@@ -1,5 +1,11 @@
 import { registerUserParams } from "@/lib/types";
-import { getLoginUserApi, logInApi, registerApi } from "@/services/AuthService";
+import {
+    forgotPasswordApi,
+    getLoginUserApi,
+    logInApi,
+    registerApi,
+    resetPasswordApi,
+} from "@/services/AuthService";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 // import websocket from "@/services/WebSocketService";
 
@@ -30,6 +36,38 @@ export const registerUser = createAsyncThunk(
         } catch (error: any) {
             // Handle errors
             return rejectWithValue(error.response?.data || "Login failed");
+        }
+    }
+);
+
+// Define the forgot password service as an async thunk
+export const forgotPassword = createAsyncThunk(
+    "auth/forgotPassword",
+    async (payload: any, { rejectWithValue }) => {
+        try {
+            const response = await forgotPasswordApi(payload);
+            return response.data;
+        } catch (error: any) {
+            // Handle errors
+            return rejectWithValue(
+                error.response?.data || "Forgot Password  failed"
+            );
+        }
+    }
+);
+
+// Define the reset password service as an async thunk
+export const resetPassword = createAsyncThunk(
+    "auth/resetPassword",
+    async (payload: any, { rejectWithValue }) => {
+        try {
+            const response = await resetPasswordApi(payload);
+            return response.data;
+        } catch (error: any) {
+            // Handle errors
+            return rejectWithValue(
+                error.response?.data || "Reset Password failed"
+            );
         }
     }
 );
@@ -136,6 +174,42 @@ const authSlice = createSlice({
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.error = action.payload || "Login failed";
+                }
+            )
+
+            .addCase(forgotPassword.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(
+                forgotPassword.fulfilled,
+                (state, action: PayloadAction<any>) => {
+                    state.loading = false;
+                }
+            )
+            .addCase(
+                forgotPassword.rejected,
+                (state, action: PayloadAction<any>) => {
+                    state.loading = false;
+                    state.error = action.payload || "Unable to Forgot Password";
+                }
+            )
+
+            .addCase(resetPassword.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(
+                resetPassword.fulfilled,
+                (state, action: PayloadAction<any>) => {
+                    state.loading = false;
+                }
+            )
+            .addCase(
+                resetPassword.rejected,
+                (state, action: PayloadAction<any>) => {
+                    state.loading = false;
+                    state.error = action.payload || "Unable to Reset Password";
                 }
             )
 
