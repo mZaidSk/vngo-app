@@ -80,9 +80,9 @@ export function NgoSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarContent>
                 <NgoSidebarMain items={data.main} />
             </SidebarContent>
-            <SidebarFooter>
+            {/* <SidebarFooter>
                 <NgoSidebarFooter />
-            </SidebarFooter>
+            </SidebarFooter> */}
             <SidebarRail />
         </Sidebar>
     );

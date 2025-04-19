@@ -1,5 +1,8 @@
-import { Card, CardContent } from "@/components/ui/card";
+// ActivityView.tsx
+import { Link } from "react-router-dom";
+import { CalendarIcon, Grid2X2Icon, UsersIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
     Select,
@@ -8,64 +11,22 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { CalendarIcon, Grid2X2Icon, UsersIcon } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/store/store";
-import { getActivitiesByNgoId } from "@/store/slice/ActivitySlice";
-import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
-// Mock Stats & Activities Data
-const stats = [
-    {
-        label: "Total Activities",
-        value: 24,
-        icon: <CalendarIcon className="w-6 h-6 text-muted-foreground" />,
-    },
-    {
-        label: "Upcoming Activities",
-        value: 8,
-        icon: <Grid2X2Icon className="w-6 h-6 text-muted-foreground" />,
-    },
-    {
-        label: "Total Volunteers",
-        value: 156,
-        icon: <UsersIcon className="w-6 h-6 text-muted-foreground" />,
-    },
-];
-
-const Activity = () => {
-    const activitySelector = useSelector(
-        (state: RootState) => state.activity.activities
-    );
-    const dispatch = useDispatch<AppDispatch>();
-
-    const getActivity = () => {
-        dispatch(getActivitiesByNgoId()).then((res: any) => console.log(res));
-    };
-
-    useEffect(() => {
-        getActivity();
-    }, []);
+const ActivityView = ({ activities }: { activities: any[] }) => {
+    const authSelector = useSelector((state: RootState) => state.auth.user);
 
     const stats = [
         {
             label: "Total Activities",
-            value: activitySelector?.data?.length,
+            value: activities.length,
             icon: <CalendarIcon className="w-6 h-6 text-muted-foreground" />,
         },
         {
             label: "Upcoming Activities",
-            value:
-                activitySelector?.data?.filter(
-                    (activity: any) => activity.status === "Upcoming"
-                )?.length || 0,
+            value: activities.filter((a) => a.status === "Upcoming").length,
             icon: <Grid2X2Icon className="w-6 h-6 text-muted-foreground" />,
-        },
-        {
-            label: "Total Volunteers",
-            value: 156,
-            icon: <UsersIcon className="w-6 h-6 text-muted-foreground" />,
         },
     ];
 
@@ -126,17 +87,19 @@ const Activity = () => {
                 </Select>
                 <Button variant="ghost">Reset Filters</Button>
 
-                <Link to="form" className="ml-auto">
-                    <Button className="cursor-pointer">
-                        + Create Activity
-                    </Button>
-                </Link>
+                {authSelector?.data?.role === "NGO" && (
+                    <Link to="form" className="ml-auto">
+                        <Button className="cursor-pointer">
+                            + Create Activity
+                        </Button>
+                    </Link>
+                )}
             </div>
 
             {/* Activities Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {activitySelector?.data && activitySelector.data.length > 0 ? (
-                    activitySelector.data.map((activity: any) => (
+                {activities.length > 0 ? (
+                    activities.map((activity: any) => (
                         <Card key={activity.id} className="overflow-hidden">
                             <div className="h-32 w-full bg-muted flex items-center justify-center">
                                 {activity.bannerImage ? (
@@ -190,33 +153,8 @@ const Activity = () => {
                     </div>
                 )}
             </div>
-
-            {/* Pagination */}
-            {/* <div className="flex justify-center">
-                <Pagination>
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious href="#" />
-                        </PaginationItem>
-                        <PaginationItem>
-                            <Button variant="outline" className="rounded-full">
-                                1
-                            </Button>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <Button variant="ghost">2</Button>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <Button variant="ghost">3</Button>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <PaginationNext href="#" />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            </div> */}
         </div>
     );
 };
 
-export default Activity;
+export default ActivityView;

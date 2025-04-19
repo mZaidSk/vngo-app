@@ -38,78 +38,79 @@ const steps = [
 
 const validationSchema = Yup.object({});
 
-// const defaultInitialValues = {
-//     detailedDescription:
-//         "Join us for a community clean-up event where volunteers will help beautify the local park.",
-//     goalsHighlights:
-//         "Promote environmental awareness, foster community bonding, and maintain a clean, safe environment.",
-//     pastEvents:
-//         "Last year, over 100 volunteers participated and collected 500 lbs of trash.",
-//     title: "Community Park Clean-Up Day",
-//     description:
-//         "A volunteer-driven effort to clean and restore our neighborhood park.",
-//     status: "Upcoming",
-//     organizationName: "Green Future Foundation",
-//     contactEmail: "contact@greenfuture.org",
-//     phoneNumber: "+1 (555) 123-4567",
-//     website: "https://www.greenfuture.org",
-//     startDate: "2025-05-20",
-//     endDate: "2025-05-20",
-//     startTime: "09:00",
-//     endTime: "14:00",
-//     timezone: "America/New_York",
-//     duration: "5 hours",
-//     venueName: "Central City Park",
-//     fullAddress: "123 Park Avenue, Springfield, NY 10001, USA",
-//     googleMapsUrl:
-//         "https://maps.google.com/?q=123+Park+Avenue+Springfield+NY+10001",
-//     image1: "https://via.placeholder.com/600x400.png?text=Event+Image+1",
-//     image2: "https://via.placeholder.com/600x400.png?text=Event+Image+2",
-//     image3: "https://via.placeholder.com/600x400.png?text=Event+Image+3",
-//     bannerImage: "https://via.placeholder.com/1200x400.png?text=Event+Banner",
-//     totalSpots: "150",
-//     spotsLeft: "87",
-//     minAge: "16",
-//     skills: ["Teamwork", "Environmental Awareness", "Litter Collection"],
-//     whatToBring: "Reusable water bottle, gloves, sunblock, and a hat.",
-//     safetyMeasures:
-//         "First-aid kits on site, safety briefing before event starts.",
-//     weatherAdvisory:
-//         "Event may be postponed in case of heavy rain. Please check updates on our website.",
-// };
-
 const defaultInitialValues = {
-    detailedDescription: "",
-    goalsHighlights: "",
-    pastEvents: "",
-    title: "",
-    description: "",
+    detailedDescription:
+        "Join us for a community clean-up event where volunteers will help beautify the local park.",
+    goalsHighlights:
+        "Promote environmental awareness, foster community bonding, and maintain a clean, safe environment.",
+    pastEvents:
+        "Last year, over 100 volunteers participated and collected 500 lbs of trash.",
+    title: "Community Park Clean-Up Day",
+    description:
+        "A volunteer-driven effort to clean and restore our neighborhood park.",
     status: "Upcoming",
-    organizationName: "",
-    contactEmail: "",
-    phoneNumber: "",
-    website: "",
-    startDate: "",
-    endDate: "",
-    startTime: "",
-    endTime: "",
-    timezone: "",
-    duration: "",
-    venueName: "",
-    fullAddress: "",
-    googleMapsUrl: "",
-    image1: null,
-    image2: null,
-    image3: null,
-    totalSpots: "",
-    spotsLeft: "",
-    minAge: "",
-    skills: [],
-    whatToBring: "",
-    safetyMeasures: "",
-    weatherAdvisory: "",
-    bannerImage: null,
+    organizationName: "Green Future Foundation",
+    contactEmail: "contact@greenfuture.org",
+    phoneNumber: "+1 (555) 123-4567",
+    website: "https://www.greenfuture.org",
+    startDate: "2025-05-20",
+    endDate: "2025-05-20",
+    startTime: "09:00",
+    endTime: "14:00",
+    timezone: "America/New_York",
+    duration: "5 hours",
+    venueName: "Central City Park",
+    fullAddress: "123 Park Avenue, Springfield, NY 10001, USA",
+    googleMapsUrl:
+        "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1885.6273414435211!2d72.89801449839479!3d19.052536799999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c61d35d338a1%3A0xc67ebba537fef6c1!2sDiamond%20Garden!5e0!3m2!1sen!2sin!4v1744710094598!5m2!1sen!2sin",
+    image1: "https://images.pexels.com/photos/713297/pexels-photo-713297.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image2: "https://images.pexels.com/photos/158028/bellingrath-gardens-alabama-landscape-scenic-158028.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image3: "https://images.pexels.com/photos/1528361/pexels-photo-1528361.jpeg?auto=compress&cs=tinysrgb&w=600",
+    bannerImage:
+        "https://images.pexels.com/photos/236940/pexels-photo-236940.jpeg?auto=compress&cs=tinysrgb&w=600",
+    totalSpots: "150",
+    spotsLeft: "87",
+    minAge: "16",
+    skills: ["Teamwork", "Environmental Awareness", "Litter Collection"],
+    whatToBring: "Reusable water bottle, gloves, sunblock, and a hat.",
+    safetyMeasures:
+        "First-aid kits on site, safety briefing before event starts.",
+    weatherAdvisory:
+        "Event may be postponed in case of heavy rain. Please check updates on our website.",
 };
+
+// const defaultInitialValues = {
+//     detailedDescription: "",
+//     goalsHighlights: "",
+//     pastEvents: "",
+//     title: "",
+//     description: "",
+//     status: "Upcoming",
+//     organizationName: "",
+//     contactEmail: "",
+//     phoneNumber: "",
+//     website: "",
+//     startDate: "",
+//     endDate: "",
+//     startTime: "",
+//     endTime: "",
+//     timezone: "",
+//     duration: "",
+//     venueName: "",
+//     fullAddress: "",
+//     googleMapsUrl: "",
+//     image1: null,
+//     image2: null,
+//     image3: null,
+//     totalSpots: "",
+//     spotsLeft: "",
+//     minAge: "",
+//     skills: [],
+//     whatToBring: "",
+//     safetyMeasures: "",
+//     weatherAdvisory: "",
+//     bannerImage: null,
+// };
 const ActivityForm = () => {
     const { id } = useParams();
     const dispatch = useDispatch<AppDispatch>();
@@ -181,14 +182,14 @@ const ActivityForm = () => {
             if (id) {
                 dispatch(updateActivity({ id, payload: values })).then(
                     (res: any) => {
-                        toast(res.payload.message);
-                        navigate(`/ngo/activities/${res?.payload?.data?.id}`);
+                        toast("Activity Updated Successfully");
+                        navigate(`/ngo/activities/${id}`);
                     }
                 );
             } else {
                 dispatch(createActivity(values)).then((res: any) => {
-                    toast(res.payload.message);
-                    navigate(`/ngo/activities/${id}`);
+                    toast("Activity Created Successfully");
+                    navigate(`/ngo/activities/${res?.payload?.data?.id}`);
                 });
             }
             // TODO: handle final submission

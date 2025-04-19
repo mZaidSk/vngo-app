@@ -9,21 +9,24 @@ import {
     Heart,
     MessageCircle,
     Share2,
+    Search,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { getAllActivities } from "@/store/slice/ActivitySlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AvatarImage } from "@radix-ui/react-avatar";
+import { getAllActivities } from "@/store/slice/ActivitySlice";
+import { Input } from "@/components/ui/input";
 
-const NGOFeed = () => {
+const VolunteerFeed = () => {
     const dispatch = useDispatch<AppDispatch>();
     const activitySelector = useSelector(
         (state: RootState) => state.activity.activities
     );
 
-    const activities = activitySelector?.data;
+    const activities = activitySelector?.data || [];
+    const [searchTerm, setSearchTerm] = useState("");
 
     const getActivities = async () => {
         dispatch(getAllActivities());
@@ -33,78 +36,98 @@ const NGOFeed = () => {
         getActivities();
     }, []);
 
+    const filteredActivities = activities.filter((activity: any) =>
+        `${activity.title} ${activity.description}`
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="p-6 space-y-4 max-w-4xl mx-auto">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-semibold">NGO Activities Feed</h1>
-                <Link to={"/ngo/activities/add"}>
+                <h1 className="text-2xl font-semibold">Volunteer Feed</h1>
+                <Link to="/volunteer/opportunities">
                     <Button className="cursor-pointer">
-                        + Create Activity
+                        Browse Opportunities
                     </Button>
                 </Link>
             </div>
 
-            {/* Filters */}
+            {/* 🔍 Search Bar */}
+            <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                    type="text"
+                    placeholder="Search by title or description..."
+                    className="pl-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+
+            {/* Sort / Filters */}
             <div className="flex gap-4 py-2">
                 <select className="border rounded-md p-2 text-sm">
-                    <option>Sort by: Latest</option>
+                    <option>Sort by: Recommended</option>
                 </select>
                 <select className="border rounded-md p-2 text-sm">
-                    <option>All Categories</option>
+                    <option>My Skills</option>
                 </select>
                 <select className="border rounded-md p-2 text-sm">
-                    <option>All Locations</option>
+                    <option>Nearby</option>
                 </select>
             </div>
 
-            {activities?.length &&
-                activities.map((activity: any, index: any) => (
-                    <Card key={index} className="rounded-xl shadow-md">
+            {/* Activity Cards */}
+            {filteredActivities.length > 0 ? (
+                filteredActivities.map((activity: any) => (
+                    <Card key={activity.id} className="rounded-xl shadow-md">
                         <CardContent className="p-4">
                             <div className="flex items-start gap-4">
                                 <Avatar>
                                     <AvatarImage
-                                        src={activity?.ngoProfile?.logo_url}
+                                        src={activity.ngoProfile?.logo_url}
                                         alt={
-                                            activity?.ngoProfile
+                                            activity.ngoProfile
                                                 ?.organization_name
                                         }
                                     />
                                     <AvatarFallback>
-                                        {
-                                            activity?.ngoProfile
-                                                ?.organization_name[0]
-                                        }
+                                        {activity.ngoProfile
+                                            ?.organization_name?.[0] || "N"}
                                     </AvatarFallback>
                                 </Avatar>
+
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <Link
-                                                to={`/ngo/profile/${activity?.ngoProfile?.ngo_id}`}
+                                                to={`/ngo/profile/${activity.ngoProfile?.ngo_id}`}
                                             >
                                                 <p className="font-semibold">
                                                     {
-                                                        activity?.ngoProfile
+                                                        activity.ngoProfile
                                                             ?.organization_name
                                                     }
                                                 </p>
                                             </Link>
                                             <p className="text-sm text-muted-foreground">
-                                                {activity?.ngoProfile?.city}
+                                                {activity.ngoProfile?.city}
                                             </p>
                                         </div>
                                         <Badge variant="outline">
                                             {activity?.status}
                                         </Badge>
                                     </div>
+
                                     <div className="h-36 mt-4 rounded-lg">
                                         <img
                                             src={activity?.bannerImage}
-                                            alt="NGO Cover Banner"
+                                            alt="Volunteer Opportunity Banner"
                                             className="w-full h-full object-cover rounded-sm"
                                         />
                                     </div>
+
                                     <h2 className="mt-4 text-lg font-medium">
                                         {activity.title}
                                     </h2>
@@ -113,8 +136,8 @@ const NGOFeed = () => {
                                     </p>
 
                                     <div className="flex flex-wrap gap-2 mt-2">
-                                        {activity.skills.map(
-                                            (skill: any, i: any) => (
+                                        {activity.skills?.map(
+                                            (skill: any, i: number) => (
                                                 <Badge
                                                     key={i}
                                                     variant="secondary"
@@ -143,7 +166,7 @@ const NGOFeed = () => {
                                                 activity.spotsLeft -
                                                     activity.totalSpots
                                             )}
-                                            /{activity.totalSpots} volunteers
+                                            /{activity.totalSpots} joined
                                         </div>
                                     </div>
 
@@ -151,32 +174,35 @@ const NGOFeed = () => {
                                         <div className="flex items-center gap-6 text-sm text-muted-foreground">
                                             <div className="flex items-center gap-1">
                                                 <Heart size={16} />{" "}
-                                                {activity?.likes || 33}
+                                                {activity.likes || 0}
                                             </div>
                                             <div className="flex items-center gap-1">
                                                 <MessageCircle size={16} />{" "}
-                                                {activity?.comments || 23}
+                                                {activity.comments || 0}
                                             </div>
                                             <div className="flex items-center gap-1">
                                                 <Share2 size={16} />{" "}
-                                                {activity?.shares || 3}
+                                                {activity.shares || 0}
                                             </div>
                                         </div>
                                         <Link
-                                            to={`/ngo/activities/${activity?.id}`}
+                                            to={`/volunteer/activity/${activity.id}`}
                                         >
-                                            <Button className="cursor-pointer">
-                                                View Details
-                                            </Button>
+                                            <Button>View Details</Button>
                                         </Link>
                                     </div>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
-                ))}
+                ))
+            ) : (
+                <p className="text-muted-foreground text-center py-10">
+                    No activities found.
+                </p>
+            )}
         </div>
     );
 };
 
-export default NGOFeed;
+export default VolunteerFeed;

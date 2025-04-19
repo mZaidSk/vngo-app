@@ -48,7 +48,8 @@ export const VenueStep: React.FC = () => {
                     onChange={handleChange}
                 />
             </div>
-            {values?.googleMapsUrl && (
+            {values?.googleMapsUrl &&
+            values.googleMapsUrl.startsWith("https://www.google.com/maps") ? (
                 <div className="mt-4">
                     <Label className="mb-2 block">Map Preview</Label>
                     <iframe
@@ -56,12 +57,15 @@ export const VenueStep: React.FC = () => {
                         src={values.googleMapsUrl}
                         width="100%"
                         height="300"
-                        allowFullScreen
                         loading="lazy"
                         style={{ border: 0 }}
                     />
                 </div>
-            )}
+            ) : values?.googleMapsUrl ? (
+                <p className="text-red-500 mt-2">
+                    Please enter a valid Google Maps URL.
+                </p>
+            ) : null}
         </div>
     );
 };

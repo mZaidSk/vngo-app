@@ -23,14 +23,8 @@ export default function NGODashboard() {
 
     const stats = [
         {
-            title: "Total Donations",
-            value: "$124,563",
-            change: "+12.5% from last month",
-            icon: "$",
-        },
-        {
             title: "Beneficiaries",
-            value: "1,234",
+            value: "100",
             change: "+3.2% from last month",
             icon: "👥",
         },
@@ -42,8 +36,8 @@ export default function NGODashboard() {
         },
         {
             title: "Volunteers",
-            value: "456",
-            change: "+5.3% from last month",
+            value: "0",
+            change: "0% from last month",
             icon: "🤝",
         },
     ];

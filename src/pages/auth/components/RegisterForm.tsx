@@ -24,6 +24,7 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { registerUser } from "@/store/slice/AuthSlice";
+import { toast } from "sonner";
 
 const RegisterForm = () => {
     const [dob, setDob] = useState<Date>();
@@ -50,11 +51,15 @@ const RegisterForm = () => {
             dob: Yup.string().required("Date of birth is required"),
             role: Yup.string().required("Role is required"),
         }),
-        onSubmit: (values) => {
-            console.log("Form values:", values);
-            dispatch(registerUser(values)).then((res: any) => {
-                console.log(res);
-            });
+        onSubmit: async (values) => {
+            const data = await dispatch(registerUser(values));
+
+            if (data.payload?.success) {
+                toast.success("Registration Successful");
+            } else {
+                toast.error("Registration Failed");
+            }
+            window.location.reload();
             // Perform API call here
         },
     });
@@ -217,7 +222,6 @@ const RegisterForm = () => {
                                     Volunteer
                                 </SelectItem>
                                 <SelectItem value="NGO">NGO</SelectItem>
-                                <SelectItem value="ADMIN">Admin</SelectItem>
                             </SelectContent>
                         </Select>
                         {formik.touched.role && formik.errors.role && (

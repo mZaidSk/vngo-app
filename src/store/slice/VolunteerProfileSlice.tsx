@@ -1,20 +1,22 @@
+// src/store/slices/volunteerProfileSlice.ts
+
 import {
-    createNgoProfileApi,
-    getAllNgoProfilesApi,
-    getNgoProfileByIdApi,
-    updateNgoProfileApi,
-    deleteNgoProfileApi,
-    getNgoProfileByUserIdApi,
-} from "@/services/NgoProfileService";
+    createVolunteerProfileApi,
+    getAllVolunteerProfilesApi,
+    getVolunteerProfileByIdApi,
+    updateVolunteerProfileApi,
+    deleteVolunteerProfileApi,
+    getVolunteerProfileByUserIdApi,
+} from "@/services/VolunteerProfileService";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 // Thunks
 
-export const createNgoProfile = createAsyncThunk(
-    "ngoProfile/create",
+export const createVolunteerProfile = createAsyncThunk(
+    "volunteerProfile/create",
     async (payload: any, { rejectWithValue }) => {
         try {
-            const response = await createNgoProfileApi(payload);
+            const response = await createVolunteerProfileApi(payload);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Creation failed");
@@ -22,11 +24,11 @@ export const createNgoProfile = createAsyncThunk(
     }
 );
 
-export const getAllNgoProfiles = createAsyncThunk(
-    "ngoProfile/getAll",
+export const getAllVolunteerProfiles = createAsyncThunk(
+    "volunteerProfile/getAll",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await getAllNgoProfilesApi();
+            const response = await getAllVolunteerProfilesApi();
             return response.data;
         } catch (error: any) {
             return rejectWithValue(
@@ -36,11 +38,11 @@ export const getAllNgoProfiles = createAsyncThunk(
     }
 );
 
-export const getNgoProfileById = createAsyncThunk(
-    "ngoProfile/getById",
+export const getVolunteerProfileById = createAsyncThunk(
+    "volunteerProfile/getById",
     async (id: string, { rejectWithValue }) => {
         try {
-            const response = await getNgoProfileByIdApi(id);
+            const response = await getVolunteerProfileByIdApi(id);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(
@@ -50,11 +52,11 @@ export const getNgoProfileById = createAsyncThunk(
     }
 );
 
-export const getNgoProfileByUserId = createAsyncThunk(
-    "ngoProfile/getByUserId",
-    async (_, { rejectWithValue }) => {
+export const getVolunteerProfileByUserId = createAsyncThunk(
+    "volunteerProfile/getByUserId",
+    async (id: string, { rejectWithValue }) => {
         try {
-            const response = await getNgoProfileByUserIdApi();
+            const response = await getVolunteerProfileByUserIdApi(id);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(
@@ -64,14 +66,14 @@ export const getNgoProfileByUserId = createAsyncThunk(
     }
 );
 
-export const updateNgoProfile = createAsyncThunk(
-    "ngoProfile/update",
+export const updateVolunteerProfile = createAsyncThunk(
+    "volunteerProfile/update",
     async (
         { id, payload }: { id: string; payload: any },
         { rejectWithValue }
     ) => {
         try {
-            const response = await updateNgoProfileApi(id, payload);
+            const response = await updateVolunteerProfileApi(id, payload);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Update failed");
@@ -79,11 +81,11 @@ export const updateNgoProfile = createAsyncThunk(
     }
 );
 
-export const deleteNgoProfile = createAsyncThunk(
-    "ngoProfile/delete",
+export const deleteVolunteerProfile = createAsyncThunk(
+    "volunteerProfile/delete",
     async (id: string, { rejectWithValue }) => {
         try {
-            await deleteNgoProfileApi(id);
+            await deleteVolunteerProfileApi(id);
             return id;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Delete failed");
@@ -92,14 +94,14 @@ export const deleteNgoProfile = createAsyncThunk(
 );
 
 // State
-interface NgoProfileState {
+interface VolunteerProfileState {
     profile: any | null;
-    profiles: any;
+    profiles: any[];
     loading: boolean;
     error: string | null;
 }
 
-const initialState: NgoProfileState = {
+const initialState: VolunteerProfileState = {
     profile: null,
     profiles: [],
     loading: false,
@@ -107,26 +109,26 @@ const initialState: NgoProfileState = {
 };
 
 // Slice
-const ngoProfileSlice = createSlice({
-    name: "ngoProfile",
+const volunteerProfileSlice = createSlice({
+    name: "volunteerProfile",
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
             // Create
-            .addCase(createNgoProfile.pending, (state) => {
+            .addCase(createVolunteerProfile.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(
-                createNgoProfile.fulfilled,
+                createVolunteerProfile.fulfilled,
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.profile = action.payload;
                 }
             )
             .addCase(
-                createNgoProfile.rejected,
+                createVolunteerProfile.rejected,
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.error = action.payload;
@@ -134,19 +136,19 @@ const ngoProfileSlice = createSlice({
             )
 
             // Get All
-            .addCase(getAllNgoProfiles.pending, (state) => {
+            .addCase(getAllVolunteerProfiles.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(
-                getAllNgoProfiles.fulfilled,
+                getAllVolunteerProfiles.fulfilled,
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.profiles = action.payload;
                 }
             )
             .addCase(
-                getAllNgoProfiles.rejected,
+                getAllVolunteerProfiles.rejected,
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.error = action.payload;
@@ -154,19 +156,19 @@ const ngoProfileSlice = createSlice({
             )
 
             // Get By ID
-            .addCase(getNgoProfileById.pending, (state) => {
+            .addCase(getVolunteerProfileById.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(
-                getNgoProfileById.fulfilled,
+                getVolunteerProfileById.fulfilled,
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.profile = action.payload;
                 }
             )
             .addCase(
-                getNgoProfileById.rejected,
+                getVolunteerProfileById.rejected,
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.error = action.payload;
@@ -174,19 +176,19 @@ const ngoProfileSlice = createSlice({
             )
 
             // Get By User ID
-            .addCase(getNgoProfileByUserId.pending, (state) => {
+            .addCase(getVolunteerProfileByUserId.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(
-                getNgoProfileByUserId.fulfilled,
+                getVolunteerProfileByUserId.fulfilled,
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.profile = action.payload;
                 }
             )
             .addCase(
-                getNgoProfileByUserId.rejected,
+                getVolunteerProfileByUserId.rejected,
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.error = action.payload;
@@ -194,19 +196,19 @@ const ngoProfileSlice = createSlice({
             )
 
             // Update
-            .addCase(updateNgoProfile.pending, (state) => {
+            .addCase(updateVolunteerProfile.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(
-                updateNgoProfile.fulfilled,
+                updateVolunteerProfile.fulfilled,
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.profile = action.payload;
                 }
             )
             .addCase(
-                updateNgoProfile.rejected,
+                updateVolunteerProfile.rejected,
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.error = action.payload;
@@ -214,12 +216,12 @@ const ngoProfileSlice = createSlice({
             )
 
             // Delete
-            .addCase(deleteNgoProfile.pending, (state) => {
+            .addCase(deleteVolunteerProfile.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(
-                deleteNgoProfile.fulfilled,
+                deleteVolunteerProfile.fulfilled,
                 (state, action: PayloadAction<string>) => {
                     state.loading = false;
                     state.profiles = state.profiles.filter(
@@ -228,7 +230,7 @@ const ngoProfileSlice = createSlice({
                 }
             )
             .addCase(
-                deleteNgoProfile.rejected,
+                deleteVolunteerProfile.rejected,
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.error = action.payload;
@@ -237,4 +239,4 @@ const ngoProfileSlice = createSlice({
     },
 });
 
-export default ngoProfileSlice.reducer;
+export default volunteerProfileSlice.reducer;

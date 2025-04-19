@@ -6,9 +6,11 @@ import {
     Navigate,
     useLocation,
 } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "./store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "./store/store";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import { getLoginUser } from "./store/slice/AuthSlice";
+import { toast } from "sonner";
 
 // Layouts
 const AuthLayout = React.lazy(() => import("./layouts/AuthLayout"));
@@ -30,6 +32,7 @@ interface User {
 
 function RouterWithAuthCheck() {
     const location = useLocation();
+    const dispatch = useDispatch<AppDispatch>();
     const authSelector = useSelector((state: RootState) => state.auth);
 
     const [auth, setAuth] = useState(false);
@@ -43,11 +46,22 @@ function RouterWithAuthCheck() {
         };
 
         checkAuth();
-    }, [location.pathname, authSelector.user]);
+        getAuthUser();
+    }, [location.pathname]);
 
-    if (authSelector.loading) {
-        return <h1>Loading...</h1>;
-    }
+    const getAuthUser = () => {
+        dispatch(getLoginUser()).then((res: any) => {
+            console.log("Auth User: ", res);
+            if (!res?.payload?.success) {
+                localStorage.clear();
+                // window.location.reload();
+            }
+        });
+    };
+
+    // if (authSelector.loading) {
+    //     return <h1>Loading...</h1>;
+    // }
 
     return (
         <Suspense fallback={<h1>Loading...</h1>}>
