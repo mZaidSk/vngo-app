@@ -69,7 +69,7 @@ export const getApplicationsByUserId = createAsyncThunk(
 
 export const getApplicationsByActivityId = createAsyncThunk(
     "application/getByActivityId",
-    async (activityId: string, { rejectWithValue }) => {
+    async (activityId: any, { rejectWithValue }) => {
         try {
             const response = await getApplicationsByActivityIdApi(activityId);
             return response.data;

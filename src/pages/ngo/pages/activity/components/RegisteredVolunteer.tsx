@@ -18,10 +18,12 @@ import {
     getApplicationsByActivityId,
     updateApplication,
 } from "@/store/slice/ApplicationSlice";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 export default function RegisteredVolunteer() {
+    const { id } = useParams();
+    console.log(id);
     const location = useLocation();
     const dispatch = useDispatch<AppDispatch>();
 
@@ -35,14 +37,7 @@ export default function RegisteredVolunteer() {
     }, []);
 
     const callApplicationsByActivityId = () => {
-        if (activityId) dispatch(getApplicationsByActivityId(activityId));
-    };
-
-    console.log(applicationSelector);
-
-    const generateAllCertificates = () => {
-        console.log("Generating certificates for all participants...");
-        // implement actual logic here
+        if (id) dispatch(getApplicationsByActivityId(id));
     };
 
     const handleStatusChange = async (
@@ -147,20 +142,24 @@ export default function RegisteredVolunteer() {
                                             <td className="px-6 py-4 flex items-center gap-2">
                                                 <UserRound className="w-6 h-6" />
                                                 <div>
-                                                    <div className="font-medium">
-                                                        {
-                                                            application
-                                                                ?.volunteerProfile
-                                                                ?.fullName
-                                                        }
-                                                    </div>
-                                                    <div className="text-gray-500 text-xs">
-                                                        {
-                                                            application
-                                                                ?.volunteerProfile
-                                                                ?.email
-                                                        }
-                                                    </div>
+                                                    <Link
+                                                        to={`/ngo/activities/${id}/volunteer/${application?.volunteerProfile?.user_id}`}
+                                                    >
+                                                        <div className="font-medium">
+                                                            {
+                                                                application
+                                                                    ?.volunteerProfile
+                                                                    ?.fullName
+                                                            }
+                                                        </div>
+                                                        <div className="text-gray-500 text-xs">
+                                                            {
+                                                                application
+                                                                    ?.volunteerProfile
+                                                                    ?.email
+                                                            }
+                                                        </div>
+                                                    </Link>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">

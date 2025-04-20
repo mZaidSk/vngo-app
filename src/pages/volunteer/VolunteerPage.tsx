@@ -1,26 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import VolunteerLayout from "./layout/VolunteerLayout";
-import ExploreActivities from "./pages/feed/ExploreActivities";
-import ViewActivityDetails from "./pages/activity/ViewActivityDetails";
-import ExploreNGOsPage from "./pages/exploreNgo/ExploreNGO";
-import ViewNGOProfilePage from "./pages/exploreNgo/ViewNGOProfile";
-
-import VolunteerDashboardPage from "./pages/dashboard/DashboardPage";
-import SettingsLayout from "./setting/layout/SettingLayout";
-import SecurityPage from "./setting/component/Security";
-// import VolunteerProfile from "./pages/profile/VolunteerProfilePage";
-import NotificationPreferences from "./setting/component/Notification";
-import VolunteerPrivacySettings from "./setting/component/GeneralSetting";
-import AccountSettings from "./setting/component/Account";
-import VProfileFormPage from "./pages/profile/VolunteerProfileForm";
-import GeneralSetting from "../ngo/pages/setting/components/GeneralSetting";
-import VolunteerGeneralSettings from "./setting/component/GeneralSetting";
-import VolunteerPrivacyPolicy from "./setting/component/PrivacyPolicy";
-import TPtandcVolunteer from "./setting/component/TPtandcVolunteer";
-import VolunteerProfile from "./pages/profile/VolunteerProfile";
-import ExploreNgo from "./pages/exploreNgo/ExploreNgo.";
-import NGOProfile from "../ngo/pages/profile/components/NGOProfile";
-import Profile from "../ngo/pages/profile/components/Profile";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import FeedPage from "./pages/feed/FeedPage";
 import ActivityPage from "./pages/activity/ActivityPage";

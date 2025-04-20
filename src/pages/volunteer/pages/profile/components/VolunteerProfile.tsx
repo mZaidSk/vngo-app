@@ -5,15 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Edit, User } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import {
-    getVolunteerProfileById,
-    getVolunteerProfileByUserId,
-} from "@/store/slice/VolunteerProfileSlice";
+import { getVolunteerProfileByUserId } from "@/store/slice/VolunteerProfileSlice";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
 const VolunteerProfile = () => {
-    const { id } = useParams();
+    const { vId } = useParams();
     const authSelector = useSelector((state: RootState) => state.auth.user);
     const volunteerSelector = useSelector(
         (state: RootState) => state.volunteerProfile.profile
@@ -23,11 +20,13 @@ const VolunteerProfile = () => {
     console.log(volunteerSelector);
 
     const getProfile = async () => {
-        const data = await dispatch(
-            getVolunteerProfileByUserId(authSelector?.data?.user_id)
-        );
-
-        console.log(data);
+        if (vId) {
+            await dispatch(getVolunteerProfileByUserId(vId));
+        } else {
+            await dispatch(
+                getVolunteerProfileByUserId(authSelector?.data?.user_id)
+            );
+        }
     };
 
     useEffect(() => {
@@ -77,7 +76,7 @@ const VolunteerProfile = () => {
     }
 
     return (
-        <div className="max-w-7xl mx-auto p-6">
+        <div className="flex flex-col p-6 px-20">
             <div className="space-y-6">
                 {/* Header */}
                 <Card>
@@ -97,7 +96,7 @@ const VolunteerProfile = () => {
                                 years old
                             </div>
                         </div>
-                        {!id && (
+                        {!vId && (
                             <Link
                                 to={
                                     "/volunteer/profile/form/" +
@@ -214,7 +213,7 @@ const VolunteerProfile = () => {
                 </Card>
 
                 {/* Privacy Preferences */}
-                {!id && (
+                {!vId && (
                     <Card>
                         <CardContent className="p-6 space-y-4">
                             <h3 className="text-lg font-medium">
