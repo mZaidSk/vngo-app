@@ -1,7 +1,11 @@
-import React from "react";
+import VolunteerFeed from "./components/VolunteerFeed";
 
 const FeedPage = () => {
-    return <div>FeedPage</div>;
+    return (
+        <div>
+            <VolunteerFeed />
+        </div>
+    );
 };
 
 export default FeedPage;

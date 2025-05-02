@@ -17,41 +17,6 @@ import { getAllActivities } from "@/store/slice/ActivitySlice";
 import { useEffect } from "react";
 import { AvatarImage } from "@radix-ui/react-avatar";
 
-const activities = [
-    {
-        ngoName: "Green Earth Foundation",
-        location: "Mumbai, India",
-        status: "Upcoming",
-        title: "Tree Plantation Drive 2025",
-        description:
-            "Join us in our mission to make the city greener. We aim to plant 1000 trees across multiple locations in Mumbai.",
-        tags: ["Environment", "TreePlantation"],
-        date: "Mar 15, 2025",
-        time: "9:00 AM - 5:00 PM",
-        volunteers: 124,
-        likes: 245,
-        comments: 18,
-        shares: 8,
-        buttonLabel: "Join Now",
-    },
-    {
-        ngoName: "Education For All",
-        location: "Delhi, India",
-        status: "Ongoing",
-        title: "Digital Literacy Program",
-        description:
-            "Teaching basic computer skills to underprivileged children. Weekly classes with hands-on training.",
-        tags: ["Education", "Digital"],
-        date: "Jan - Jun 2025",
-        time: "Weekends",
-        volunteers: 45,
-        likes: 182,
-        comments: 24,
-        shares: 6,
-        buttonLabel: "View Details",
-    },
-];
-
 const NGOFeed = () => {
     const dispatch = useDispatch<AppDispatch>();
     const activitySelector = useSelector(
@@ -116,7 +81,7 @@ const NGOFeed = () => {
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <Link
-                                                to={`/ngo/profile/${activity?.ngoProfile}`}
+                                                to={`/ngo/profile/${activity?.ngoProfile?.ngo_id}`}
                                             >
                                                 <p className="font-semibold">
                                                     {

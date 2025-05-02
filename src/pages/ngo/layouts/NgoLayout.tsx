@@ -18,12 +18,13 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
 import { logout } from "@/store/slice/AuthSlice";
 
 const NgoLayout = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const authSelector = useSelector((state: RootState) => state.auth.user);
 
     const logOut = () => {
         dispatch(logout());
@@ -82,15 +83,48 @@ const NgoLayout = () => {
                                 <DropdownMenuTrigger asChild>
                                     <Avatar className="cursor-pointer">
                                         <AvatarImage
-                                            src="/avatar.png"
-                                            alt="User"
+                                            src={
+                                                authSelector?.data?.profile
+                                                    ?.logo_url
+                                            }
                                         />
-                                        <AvatarFallback>NG</AvatarFallback>
+                                        <AvatarFallback>
+                                            {authSelector?.data?.profile?.organization_name?.slice(
+                                                0,
+                                                2
+                                            )}
+                                        </AvatarFallback>
                                     </Avatar>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
+                                <DropdownMenuContent
+                                    align="end"
+                                    className="w-64"
+                                >
                                     <DropdownMenuLabel>
-                                        My Account
+                                        <div className="flex items-center gap-3">
+                                            <Avatar className="w-10 h-10">
+                                                <AvatarImage
+                                                    src={
+                                                        authSelector?.data
+                                                            ?.profile?.logo_url
+                                                    }
+                                                />
+                                                <AvatarFallback>
+                                                    {authSelector?.data?.profile?.organization_name?.slice(
+                                                        0,
+                                                        2
+                                                    )}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="text-sm">
+                                                <div className="font-medium">
+                                                    {authSelector?.data?.name}
+                                                </div>
+                                                <div className="text-muted-foreground">
+                                                    {authSelector?.data?.email}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem>Profile</DropdownMenuItem>

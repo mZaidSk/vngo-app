@@ -22,18 +22,22 @@ export default function NGOProfile() {
         (state: RootState) => state.ngoProfile.profile
     );
     const user = JSON.parse(localStorage.getItem("user") || "");
-    const isOwner = user?.user_id === ngoProfileSelector?.data?.user_id;
+    const isOwner =
+        user?.user_id === ngoProfileSelector?.data?.user_id ||
+        user?.user_id === id;
 
     const getUserProfile = () => {
         if (id) dispatch(getNgoProfileById(id));
         else dispatch(getNgoProfileByUserId());
     };
 
+    console.log(!ngoProfileSelector?.data);
+
     useEffect(() => {
         getUserProfile();
     }, [id]);
 
-    if (!ngoProfileSelector?.data && isOwner) {
+    if (!ngoProfileSelector?.data) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <Card className="w-full max-w-md text-center shadow-lg border border-destructive/20">
@@ -62,7 +66,7 @@ export default function NGOProfile() {
                 profile={ngoProfileSelector?.data}
                 isOwner={isOwner}
             />
-            <NGOStats />
+            <NGOStats stats={ngoProfileSelector?.data} />
             <NGOActivities
                 activities={ngoProfileSelector?.data?.activities}
                 isOwner={isOwner}

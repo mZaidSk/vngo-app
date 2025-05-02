@@ -18,23 +18,31 @@ import {
     Instagram,
     Linkedin,
     Edit,
+    Delete,
+    Trash,
 } from "lucide-react";
 
 import { AvatarFallback } from "@radix-ui/react-avatar";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { getActivityById } from "@/store/slice/ActivitySlice";
+import { getActivityById, deleteActivity } from "@/store/slice/ActivitySlice";
 import { useEffect } from "react";
+import { toast } from "sonner";
+import { createApplication } from "@/store/slice/ApplicationSlice";
+import { createComment } from "@/store/slice/CommentSlice";
+import CommentSection from "./CommentSection";
 
 const ActivityDetails = () => {
     const { id } = useParams();
+    const authSelector = useSelector((state: RootState) => state.auth.user);
     const activitySelector = useSelector(
         (state: RootState) => state.activity.activity
     );
 
     const activity = activitySelector?.data;
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
 
     const getActivity = async () => {
         if (id) {
@@ -43,11 +51,46 @@ const ActivityDetails = () => {
         }
     };
 
+    const user = JSON.parse(localStorage.getItem("user") || "");
+
+    const isOwner =
+        user?.user_id === activitySelector?.data?.ngoProfile?.user_id;
+
     useEffect(() => {
         if (id) {
             getActivity();
         }
     }, []);
+
+    const handleDeleteActivity = (id: any) => {
+        dispatch(deleteActivity(id))
+            .then((res: any) => {
+                console.log(res);
+                toast(res?.payload?.message || "Activity Deleted Successfully");
+                navigate("/ngo/activities");
+            })
+            .catch((err: any) => {
+                console.log(err);
+                toast(err?.payload?.message || "Error Deleted Activity");
+                navigate("/ngo/activities");
+            });
+    };
+
+    const handleJoinNowButton = async () => {
+        const payload = {
+            volunteer_profile_id: authSelector?.data?.profile?.profile_id,
+            activity_id: id,
+        };
+
+        // Dispatch the action to create the application
+        const data = await dispatch(createApplication(payload));
+
+        if (data?.payload?.success) {
+            toast.success("Registration Successful");
+        } else {
+            toast.error(data?.payload?.error?.message);
+        }
+    };
 
     return (
         <div className="p-4 space-y-6 max-w-6xl mx-auto">
@@ -68,8 +111,9 @@ const ActivityDetails = () => {
 
             {/* Title and NGO */}
             <div className="my-6">
-                <h1 className="text-2xl font-semibold">
-                    {activity?.title} <Badge>{activity?.status}</Badge>
+                <h1 className="text-2xl font-semibold flex">
+                    {activity?.title}{" "}
+                    <Badge className="ms-auto">{activity?.status}</Badge>
                 </h1>
                 <p className="text-muted-foreground mt-1">
                     {activity?.description}
@@ -300,38 +344,63 @@ const ActivityDetails = () => {
 
                 <div className="space-y-4">
                     {/* Likes & Join Button Section */}
-                    <Card>
-                        <CardContent className="px-4 space-y-3">
-                            <p className="text-sm text-gray-500">
-                                ❤️ 245 likes
-                            </p>
+                    {user.role === "VOLUNTEER" && (
+                        <Card>
+                            <CardContent className="px-4 space-y-3">
+                                <p className="text-sm text-gray-500">
+                                    ❤️ 245 likes
+                                </p>
 
-                            <Button className="w-full bg-[#0A1128] text-white">
-                                Join Now
-                            </Button>
+                                <Button
+                                    className="w-full bg-[#0A1128] text-white"
+                                    onClick={handleJoinNowButton}
+                                >
+                                    Join Now
+                                </Button>
 
-                            <div className="flex justify-center gap-4 text-gray-500">
-                                <LinkIcon className="w-5 h-5 cursor-pointer hover:text-[#0A1128]" />
-                                <TwitterIcon className="w-5 h-5 cursor-pointer hover:text-[#0A1128]" />
-                                <PinIcon className="w-5 h-5 cursor-pointer hover:text-[#0A1128]" />
-                                <PaperclipIcon className="w-5 h-5 cursor-pointer hover:text-[#0A1128]" />
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <div className="flex flex-col gap-3">
-                        <Link to={`/ngo/activities/${id}/volunteer`}>
-                            <Button size="lg" className="w-full cursor-pointer">
-                                <Users className="w-4 h-4 mr-1" />
-                                Volunteer List
+                                <div className="flex justify-center gap-4 text-gray-500">
+                                    <LinkIcon className="w-5 h-5 cursor-pointer hover:text-[#0A1128]" />
+                                    <TwitterIcon className="w-5 h-5 cursor-pointer hover:text-[#0A1128]" />
+                                    <PinIcon className="w-5 h-5 cursor-pointer hover:text-[#0A1128]" />
+                                    <PaperclipIcon className="w-5 h-5 cursor-pointer hover:text-[#0A1128]" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+                    {isOwner && (
+                        <div className="flex flex-col gap-3">
+                            <Link
+                                to={`/ngo/activities/${id}/volunteer`}
+                                state={{ activityId: id }}
+                            >
+                                <Button
+                                    size="lg"
+                                    className="w-full cursor-pointer"
+                                >
+                                    <Users className="w-4 h-4 mr-1" />
+                                    Volunteer List
+                                </Button>
+                            </Link>
+                            <Link to={`/ngo/activities/form/${id}`}>
+                                <Button
+                                    size="lg"
+                                    className="w-full cursor-pointer"
+                                >
+                                    <Edit className="w-4 h-4 mr-1" />
+                                    Edit Activity
+                                </Button>
+                            </Link>
+                            <Button
+                                size="lg"
+                                variant="destructive"
+                                className="w-full cursor-pointer"
+                                onClick={() => handleDeleteActivity(id)}
+                            >
+                                <Trash className="w-4 h-4 mr-1" />
+                                Delete Activity
                             </Button>
-                        </Link>
-                        <Link to={`/ngo/activities/form/${id}`}>
-                            <Button size="lg" className="w-full cursor-pointer">
-                                <Edit className="w-4 h-4 mr-1" />
-                                Edit Activity
-                            </Button>
-                        </Link>
-                    </div>
+                        </div>
+                    )}
                     {/* Volunteer Requirements Section */}
                     <Card>
                         <CardContent className="px-4 space-y-3">
@@ -417,7 +486,7 @@ const ActivityDetails = () => {
             </div>
 
             {/* Comments */}
-            <Card>
+            {/* <Card>
                 <CardContent className="p-4">
                     <h3 className="text-lg font-medium mb-2">Comments</h3>
                     <div className="space-y-2 text-sm text-muted-foreground">
@@ -429,7 +498,11 @@ const ActivityDetails = () => {
                     />
                     <Button className="mt-2">Post Comment</Button>
                 </CardContent>
-            </Card>
+            </Card> */}
+            <CommentSection
+                id={id}
+                comments={activitySelector?.data?.comments || []}
+            />
         </div>
     );
 };

@@ -94,7 +94,7 @@ export const deleteNgoProfile = createAsyncThunk(
 // State
 interface NgoProfileState {
     profile: any | null;
-    profiles: any[];
+    profiles: any;
     loading: boolean;
     error: string | null;
 }
@@ -140,7 +140,7 @@ const ngoProfileSlice = createSlice({
             })
             .addCase(
                 getAllNgoProfiles.fulfilled,
-                (state, action: PayloadAction<any[]>) => {
+                (state, action: PayloadAction<any>) => {
                     state.loading = false;
                     state.profiles = action.payload;
                 }
@@ -223,7 +223,7 @@ const ngoProfileSlice = createSlice({
                 (state, action: PayloadAction<string>) => {
                     state.loading = false;
                     state.profiles = state.profiles.filter(
-                        (p) => p.id !== action.payload
+                        (p: any) => p.id !== action.payload
                     );
                 }
             )

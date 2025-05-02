@@ -5,10 +5,16 @@ import PrivacyPolicySetting from "./components/PrivacyPolicySetting";
 import TermsConditions from "./components/TermsConditionsSetting";
 import AccountSetting from "./components/AccountSetting";
 
-const SettingPage = () => {
+interface MenuItem {
+    label: string;
+    icon: React.ElementType;
+    to: string;
+}
+
+const SettingPage = ({ menuItems }: { menuItems: MenuItem[] }) => {
     return (
         <Routes>
-            <Route element={<SettingLayout />}>
+            <Route element={<SettingLayout menuItems={menuItems} />}>
                 <Route path="/" element={<GeneralSetting />} />
                 <Route
                     path="/privacy-policy"

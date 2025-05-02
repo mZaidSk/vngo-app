@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { UserRound, Settings, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Select,
     SelectContent,
@@ -10,63 +10,105 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-
-type User = {
-    name: string;
-    email: string;
-    status: "Completed" | "In Progress";
-};
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import {
+    deleteApplication,
+    generateApplicationCertificate,
+    getApplicationsByActivityId,
+    updateApplication,
+} from "@/store/slice/ApplicationSlice";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function RegisteredVolunteer() {
-    const [search, setSearch] = useState("");
-    const [userList, setUserList] = useState<User[]>([
-        {
-            name: "John Doe",
-            email: "john@example.com",
-            status: "Completed",
-        },
-        {
-            name: "Jane Smith",
-            email: "jane@example.com",
-            status: "In Progress",
-        },
-    ]);
+    const { id } = useParams();
+    console.log(id);
+    const location = useLocation();
+    const dispatch = useDispatch<AppDispatch>();
 
-    const filteredUsers = userList.filter(
-        (user) =>
-            user.name.toLowerCase().includes(search.toLowerCase()) ||
-            user.email.toLowerCase().includes(search.toLowerCase())
+    const { activityId } = location.state || {};
+    const applicationSelector = useSelector(
+        (state: RootState) => state.application.applications
     );
 
-    const updateStatus = (index: number, newStatus: User["status"]) => {
-        const updated = [...userList];
-        updated[index].status = newStatus;
-        setUserList(updated);
+    useEffect(() => {
+        callApplicationsByActivityId();
+    }, []);
+
+    const callApplicationsByActivityId = () => {
+        if (id) dispatch(getApplicationsByActivityId(id));
     };
 
-    const updateAllStatuses = (newStatus: User["status"]) => {
-        const updated = userList.map((user) => ({
-            ...user,
-            status: newStatus,
-        }));
-        setUserList(updated);
+    const handleStatusChange = async (
+        applicationId: string,
+        newStatus: any
+    ) => {
+        try {
+            // Call your API to update the status
+            const response = await dispatch(
+                updateApplication({
+                    id: applicationId,
+                    payload: { status: newStatus },
+                })
+            );
+
+            if (response?.payload?.success) {
+                // Optionally, update local state here or trigger a refetch to reflect changes
+                toast.success("Status updated successfully");
+            } else {
+                toast.error("Failed to update status");
+            }
+            callApplicationsByActivityId();
+        } catch (error) {
+            console.error("Error updating status:", error);
+        }
     };
 
-    const generateAllCertificates = () => {
-        console.log("Generating certificates for all participants...");
-        // implement actual logic here
+    const generateCertificate = async (applicationId: string, userId: any) => {
+        try {
+            // Call your API to update the status
+            const response = await dispatch(
+                generateApplicationCertificate({
+                    applicationId: applicationId,
+                    userId: userId,
+                })
+            );
+
+            if (response?.payload?.success) {
+                // Optionally, update local state here or trigger a refetch to reflect changes
+                toast.success("Certificate Generated successfully");
+            } else {
+                toast.error("Failed to Generate Certificate");
+            }
+            callApplicationsByActivityId();
+        } catch (error) {
+            console.error("Error Generating Certificate:", error);
+        }
+    };
+
+    const handleDeleteApplication = async (applicationId: string) => {
+        try {
+            // Call your API to update the status
+            const response = await dispatch(deleteApplication(applicationId));
+
+            if (response?.payload) {
+                // Optionally, update local state here or trigger a refetch to reflect changes
+                toast.success("Application Deleted successfully");
+            } else {
+                toast.error("Failed to Delete Application");
+            }
+            callApplicationsByActivityId();
+        } catch (error) {
+            console.error("Error Deleting Application:", error);
+        }
     };
 
     return (
         <div className="p-6 space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">Registered volunteer</h2>
-                <Input
-                    placeholder="Search users..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="max-w-sm"
-                />
+                <Input placeholder="Search users..." className="max-w-sm" />
             </div>
 
             <Card>
@@ -81,113 +123,107 @@ export default function RegisteredVolunteer() {
                                     <th className="px-6 py-3 font-medium">
                                         <div className="flex flex-col space-y-2">
                                             <span>Participation Status</span>
-                                            <Select
-                                                onValueChange={(
-                                                    value: User["status"]
-                                                ) => updateAllStatuses(value)}
-                                            >
-                                                <SelectTrigger className="w-[140px] h-8">
-                                                    <SelectValue placeholder="Update All" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="Completed">
-                                                        Completed
-                                                    </SelectItem>
-                                                    <SelectItem value="In Progress">
-                                                        In Progress
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
                                         </div>
                                     </th>
                                     <th className="px-6 py-3 font-medium">
                                         <div className="flex flex-col space-y-2">
                                             <span>Actions</span>
-                                            <Button
-                                                size="sm"
-                                                className="w-44"
-                                                onClick={
-                                                    generateAllCertificates
-                                                }
-                                            >
-                                                Generate All
-                                            </Button>
                                         </div>
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredUsers.map((user, index) => (
-                                    <tr
-                                        key={index}
-                                        className="border-b hover:bg-gray-50 transition"
-                                    >
-                                        <td className="px-6 py-4 flex items-center gap-2">
-                                            <UserRound className="w-6 h-6" />
-                                            <div>
-                                                <div className="font-medium">
-                                                    {user.name}
+                                {applicationSelector?.data?.map(
+                                    (application: any, index: any) => (
+                                        <tr
+                                            key={index}
+                                            className="border-b hover:bg-gray-50 transition"
+                                        >
+                                            <td className="px-6 py-4 flex items-center gap-2">
+                                                <UserRound className="w-6 h-6" />
+                                                <div>
+                                                    <Link
+                                                        to={`/ngo/activities/${id}/volunteer/${application?.volunteerProfile?.user_id}`}
+                                                    >
+                                                        <div className="font-medium">
+                                                            {
+                                                                application
+                                                                    ?.volunteerProfile
+                                                                    ?.fullName
+                                                            }
+                                                        </div>
+                                                        <div className="text-gray-500 text-xs">
+                                                            {
+                                                                application
+                                                                    ?.volunteerProfile
+                                                                    ?.email
+                                                            }
+                                                        </div>
+                                                    </Link>
                                                 </div>
-                                                <div className="text-gray-500 text-xs">
-                                                    {user.email}
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <Select
-                                                value={user.status}
-                                                onValueChange={(
-                                                    value: User["status"]
-                                                ) => updateStatus(index, value)}
-                                            >
-                                                <SelectTrigger className="w-[140px]">
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="Completed">
-                                                        Completed
-                                                    </SelectItem>
-                                                    <SelectItem value="In Progress">
-                                                        In Progress
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </td>
-                                        <td className="px-6 py-4 space-x-2">
-                                            <Button variant="outline" size="sm">
-                                                <Settings className="w-4 h-4 mr-1" />
-                                                Generate Certificate
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="text-red-600"
-                                            >
-                                                <Trash2 className="w-4 h-4 mr-1" />
-                                                Remove
-                                            </Button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <Select
+                                                    value={application?.status}
+                                                    onValueChange={(value) =>
+                                                        handleStatusChange(
+                                                            application?.application_id,
+                                                            value
+                                                        )
+                                                    }
+                                                >
+                                                    <SelectTrigger className="w-[140px]">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="PENDING">
+                                                            Pending
+                                                        </SelectItem>
+                                                        <SelectItem value="APPROVED">
+                                                            Approved
+                                                        </SelectItem>
+                                                        <SelectItem value="COMPLETED">
+                                                            Completed
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </td>
+
+                                            <td className="px-6 py-4 space-x-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                        generateCertificate(
+                                                            application?.application_id,
+                                                            application
+                                                                ?.volunteerProfile
+                                                                ?.user_id
+                                                        )
+                                                    }
+                                                >
+                                                    <Settings className="w-4 h-4 mr-1" />
+                                                    Generate Certificate
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="text-red-600"
+                                                    onClick={() =>
+                                                        handleDeleteApplication(
+                                                            application?.application_id
+                                                        )
+                                                    }
+                                                >
+                                                    <Trash2 className="w-4 h-4 mr-1" />
+                                                    Remove
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    )
+                                )}
                             </tbody>
                         </table>
-                    </div>
-                    <div className="flex justify-between items-center px-6 py-4 text-sm text-muted-foreground">
-                        <div>
-                            Showing {filteredUsers.length} of {userList.length}{" "}
-                            entries
-                        </div>
-                        <div className="space-x-2">
-                            <Button size="sm" variant="outline">
-                                Previous
-                            </Button>
-                            <Button size="sm" variant="default">
-                                1
-                            </Button>
-                            <Button size="sm" variant="outline">
-                                Next
-                            </Button>
-                        </div>
                     </div>
                 </CardContent>
             </Card>

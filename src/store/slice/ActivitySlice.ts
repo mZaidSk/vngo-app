@@ -115,12 +115,14 @@ export const deleteActivity = createAsyncThunk(
 interface ActivityState {
     activity: any | null;
     activities: any;
+    ngo_activities: any;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: ActivityState = {
     activities: [],
+    ngo_activities: [],
     activity: null,
     loading: false,
     error: null,
@@ -146,7 +148,6 @@ const activitySlice = createSlice({
                 createActivity.fulfilled,
                 (state, action: PayloadAction<any>) => {
                     state.loading = false;
-                    state.activities.push(action.payload);
                 }
             )
             .addCase(
@@ -206,7 +207,7 @@ const activitySlice = createSlice({
                 getActivitiesByNgoId.fulfilled,
                 (state, action: PayloadAction<any[]>) => {
                     state.loading = false;
-                    state.activities = action.payload;
+                    state.ngo_activities = action.payload;
                 }
             )
             .addCase(

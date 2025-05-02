@@ -33,6 +33,7 @@ const LoginForm = () => {
             console.log("Form values:", values);
             dispatch(loginUser(values)).then((res: any) => {
                 console.log(res);
+                window.location.reload();
             });
             setSubmitting(false);
         },
@@ -111,9 +112,12 @@ const LoginForm = () => {
                             />
                             <Label htmlFor="remember">Remember me</Label>
                         </div>
-                        <a href="#" className="text-blue-600 hover:underline">
+                        <Link
+                            to="/auth/forgot-password"
+                            className="text-blue-600 hover:underline"
+                        >
                             Forgot password?
-                        </a>
+                        </Link>
                     </div>
 
                     <Button
